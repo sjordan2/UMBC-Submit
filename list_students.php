@@ -3,22 +3,28 @@ session_start();
 
 include 'db_sql.php';
 echo "<style>
-.delete_button {
+button.delete_button {
     text-align: center;
     color: #ff0000;
     background-color: #ffffff;
     padding: 5px;
     cursor: pointer;
 }
-.delete_button:hover {
+button.delete_button:hover {
     background-color: #ff0000;
     color: white;
 }
-table {border: 1px solid #000000;}
-th {border: 1px solid #000000;}
-td {border: 1px solid #000000; text-align: center}
-tr {border: 1px solid #000000;}
+table,th,td {
+  border : 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
 h {font-size: 30px}
+p.errorMessage {
+    display: none;
+}
 </style>
 ";
 
@@ -39,6 +45,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
         $sql_list = "SELECT lastname, firstname, umbc_name_id, umbc_id, role, section FROM Students";
         $result_list = $conn->query($sql_list);
         echo "<h id='currNumStudents'>Number of Students: $result_list->num_rows</h>";
+        echo "<p id='messageFeedback' class='errorMessage'>Message!</p>";
         echo "<table id='student_table'>";
         echo "<tr id='header_row'><th>Last Name</th><th>First Name</th><th>Name ID</th><th>Campus ID</th><th>Role</th><th>Discussion Section</th><th>Actions</th></tr>";
         if ($result_list->num_rows > 0) {
@@ -63,13 +70,32 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
     ?>
 <script>
     function deleteStudent(button) {
+        //alert("<?php echo $result_list->num_rows?>")
+        let ajaxQuery = new XMLHttpRequest();
         let student_name_id = button.id.split("_")[1]; // Gets UMBC Name Id of Student
-        let studentRowId = "student_row_" + student_name_id;
-        let studentRow = document.getElementById(studentRowId);
-        studentRow.parentNode.removeChild(studentRow);
-        let studentTable = document.getElementById("student_table");
-        let newNumStudents = studentTable.rows.length - 1;
-        let headerNumStudents = document.getElementById("currNumStudents");
-        headerNumStudents.innerHTML = "Number of Students: " + newNumStudents;
+        ajaxQuery.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                let studentRowId = "student_row_" + student_name_id;
+                let studentRow = document.getElementById(studentRowId);
+                studentRow.parentNode.removeChild(studentRow);
+                let studentTable = document.getElementById("student_table");
+                let newNumStudents = studentTable.rows.length - 1;
+                let headerNumStudents = document.getElementById("currNumStudents");
+                headerNumStudents.innerHTML = "Number of Students: " + newNumStudents;
+                let messageFeedback = document.getElementById('messageFeedback');
+                let prefix = this.responseText;
+                prefix = prefix.substring(0, 5);
+                if(prefix === "ERROR") {
+                    messageFeedback.style.color = "#ff0000";
+                } else {
+                    messageFeedback.style.color = "#3f9b42";
+                }
+                messageFeedback.innerText = this.responseText;
+                messageFeedback.style.display = 'block';
+            }
+        };
+        ajaxQuery.open("POST", "delete_student.php", true);
+        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajaxQuery.send("sname=" + student_name_id);
     }
 </script>
