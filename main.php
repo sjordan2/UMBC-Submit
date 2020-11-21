@@ -3,9 +3,15 @@ session_start();
 
 ?>
 <html lang="en">
+<style>
+    body {background-color: #F1C04B}
+    #newstudent_form {text-align: center;
+        border: thin solid black;
+    }
+</style>
 <body>
 
-	<form method="post" action="newstudent.php">
+	<form method="post" action="newstudent.php" id="newstudent_form">
 	<label for="student_first_name">
 	Student's First Name:
 	</label><br>
