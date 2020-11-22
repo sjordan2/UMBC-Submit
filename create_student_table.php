@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 include 'db_sql.php';
 
@@ -14,8 +13,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 	$sql = "SHOW TABLES LIKE 'Students';";
 	$result = $conn->query($sql);
 	if($result->num_rows > 0) {
-        $_SESSION["CreateTableMessage"] = "The 'Students' table is already created! Use the 'List Students' button to view it!";
-        header('Location: main.php');
+        echo "Already done!";
 	} else {
 		$newtable_sql = "CREATE TABLE Students (
                         umbc_name_id VARCHAR(30) PRIMARY KEY,
@@ -26,11 +24,9 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
                         role VARCHAR(30) NOT NULL
                         )";
 		if ($conn->query($newtable_sql) === TRUE) {
-            $_SESSION["CreateTableMessage"] = "'Students' table successfully created!";
-            header('Location: main.php');
+            echo "'Students' table successfully created!";
         } else {
-            $_SESSION["CreateTableMessage"] = $conn->error;
-            header('Location: main.php');
+            echo "ERROR: " . $conn->error;
         }
 
 	}

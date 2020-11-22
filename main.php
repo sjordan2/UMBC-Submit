@@ -13,6 +13,18 @@ session_start();
         color: red;
         margin: 0px;
     }
+    button {
+        background-color: white;
+        color: #0073ca;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+        border: 2px solid;
+    }
+    button:hover {
+        background-color: #0073ca;
+        color: white;
+    }
 </style>
 <body>
 
@@ -59,9 +71,9 @@ session_start();
 
     Student's Role:<br>
     <input type="radio" id="studentRadio" name="role" value="student">
-    <label for="student">Student</label>
+    <label for="studentRadio">Student</label>
     <input type="radio" id="taRadio" name="role" value="ta">
-    <label for="ta">TA</label>
+    <label for="taRadio">TA</label>
     <br>
 
     <p id='roleFeedback' class='errorMessage'>The student's role cannot be empty!</p>
@@ -71,40 +83,10 @@ session_start();
 	<br>
 	</form>
 
-	<form method="post" action="list_students.php">
-        <input type="submit" value="List Students" name="list_student">
-        <br>
-    </form>
-
-<p style="color:#ff0000">
-    <?php
-    if(isset($_SESSION["ListStudentsMessage"])) {
-        print(nl2br("ERROR: " . $_SESSION["ListStudentsMessage"] . "\r\n"));
-        session_unset();
-    }
-    ?>
-</p>
-
-	<form method="post" action="create_student_table.php">
-	    <input type="submit" value="Create Students Table" name="create_table">
-	</form>
-
-<?php
-if(isset($_SESSION["CreateTableMessage"])) {
-    print(nl2br($_SESSION["CreateTableMessage"] . "\r\n"));
-    session_unset();
-}
-?>
-    <form method="post" action="delete_student_table.php">
-        <input type="submit" value="Delete Students Table" name="delete_table">
-    </form>
-
-<?php
-if(isset($_SESSION["DeleteTableMessage"])) {
-    print(nl2br($_SESSION["DeleteTableMessage"] . "\r\n"));
-    session_unset();
-}
-?>
+	<button id="viewRosterButton" onclick="viewRoster()">
+        View Student Roster
+    </button>
+    <p id="viewRosterMessage" class=errorMessage></p><br><br>
 
     <form enctype="multipart/form-data" action="upload_students.php" method="POST">
         <input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
@@ -163,7 +145,6 @@ if(isset($_SESSION["DeleteTableMessage"])) {
             isGoodForm = false;
         }
         if(isGoodForm === true) {
-            console.log("Good form!")
             let ajaxQuery = new XMLHttpRequest();
             ajaxQuery.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
@@ -190,5 +171,26 @@ if(isset($_SESSION["DeleteTableMessage"])) {
         document.getElementById("nameIdFeedback").style.display = 'none';
         document.getElementById("discussionSectionFeedback").style.display = 'none';
         document.getElementById("roleFeedback").style.display = "none";
+    }
+    function viewRoster() {
+        let ajaxQuery = new XMLHttpRequest();
+        ajaxQuery.onreadystatechange = function() {
+            if(this.readyState === 4 && this.status === 200) {
+                let prefix = this.responseText;
+                console.log(this.responseText);
+                prefix = prefix.substring(0, 5);
+                let viewRosterMessage = document.getElementById("viewRosterMessage");
+                viewRosterMessage.innerText = this.responseText;
+                if(prefix === "ERROR") {
+                    viewRosterMessage.style.color = "#ff0000";
+                    viewRosterMessage.style.display = 'block';
+                } else {
+                    window.location.href = "list_students.php";
+                }
+            }
+        };
+        ajaxQuery.open("POST", "create_student_table.php", true);
+        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajaxQuery.send();
     }
 </script>

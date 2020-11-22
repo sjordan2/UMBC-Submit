@@ -1,33 +1,36 @@
+<style>
+    button.delete_button {
+        text-align: center;
+        color: #ff0000;
+        background-color: #ffffff;
+        padding: 5px;
+        cursor: pointer;
+        border: solid 2px;
+    }
+    button.delete_button:hover {
+        background-color: #ff0000;
+        color: white;
+        border: solid 2px;
+    }
+    table,th,td {
+        border : 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+    }
+    h {font-size: 30px}
+    p.errorMessage {
+        display: none;
+    }
+    body {
+        background-color: #F1C04B;
+    }
+</style>
+
 <?php
-session_start();
 
 include 'db_sql.php';
-echo "<style>
-button.delete_button {
-    text-align: center;
-    color: #ff0000;
-    background-color: #ffffff;
-    padding: 5px;
-    cursor: pointer;
-}
-button.delete_button:hover {
-    background-color: #ff0000;
-    color: white;
-}
-table,th,td {
-  border : 1px solid black;
-  border-collapse: collapse;
-}
-th, td {
-    padding: 5px;
-}
-h {font-size: 30px}
-p.errorMessage {
-    display: none;
-}
-</style>
-";
-
 
 // Create connection
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
@@ -36,36 +39,30 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 	if ($conn->connect_error) {
   	    die("Connection failed: " . $conn->connect_error);
 	}
-    $sql_check = "SHOW TABLES LIKE 'Students';";
-    $result_check = $conn->query($sql_check);
-    if($result_check->num_rows == 0) {
-        $_SESSION["ListStudentsMessage"] = "There is no 'Students' table!";
-        header('Location: main.php');
-    } else {
-        $sql_list = "SELECT lastname, firstname, umbc_name_id, umbc_id, role, section FROM Students";
-        $result_list = $conn->query($sql_list);
-        echo "<h id='currNumStudents'>Number of Students: $result_list->num_rows</h>";
-        echo "<p id='messageFeedback' class='errorMessage'></p>";
-        echo "<table id='student_table'>";
-        echo "<tr id='header_row'><th>Last Name</th><th>First Name</th><th>Name ID</th><th>Campus ID</th><th>Role</th><th>Discussion Section</th><th>Actions</th></tr>";
-        if ($result_list->num_rows > 0) {
-            // output data of each row
-            $counter = 0;
-            while($row = $result_list->fetch_assoc()) {
-                $student_id = 'student_row_' . $row['umbc_name_id'];
-                echo "<tr id=$student_id>";
-                foreach($row as $element) {
-                    echo "<td>";
-                    echo $element;
-                    echo "</td>";
-                }
-                $deleteid = "del_" . $row['umbc_name_id'];
-                echo "<td><button class='delete_button' id=$deleteid onclick='deleteStudent(this)'>Remove Student</button></td>";
-                echo "</tr>";
-                $counter++;
+
+    $sql_list = "SELECT lastname, firstname, umbc_name_id, umbc_id, role, section FROM Students";
+    $result_list = $conn->query($sql_list);
+    echo "<h id='currNumStudents'>Number of Students: $result_list->num_rows</h>";
+    echo "<p id='messageFeedback' class='errorMessage'></p>";
+    echo "<table id='student_table'>";
+    echo "<tr id='header_row'><th>Last Name</th><th>First Name</th><th>Name ID</th><th>Campus ID</th><th>Role</th><th>Discussion Section</th><th>Actions</th></tr>";
+    if ($result_list->num_rows > 0) {
+        // output data of each row
+        $counter = 0;
+        while($row = $result_list->fetch_assoc()) {
+            $student_id = 'student_row_' . $row['umbc_name_id'];
+            echo "<tr id=$student_id>";
+            foreach($row as $element) {
+                echo "<td>";
+                echo $element;
+                echo "</td>";
             }
+            $deleteid = "del_" . $row['umbc_name_id'];
+            echo "<td><button class='delete_button' id=$deleteid onclick='deleteStudent(this)'>Remove Student</button></td>";
+            echo "</tr>";
+            $counter++;
+        }
         echo "</table>";
-    }
 }
     ?>
 <script>
