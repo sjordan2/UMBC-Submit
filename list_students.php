@@ -45,7 +45,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
         $sql_list = "SELECT lastname, firstname, umbc_name_id, umbc_id, role, section FROM Students";
         $result_list = $conn->query($sql_list);
         echo "<h id='currNumStudents'>Number of Students: $result_list->num_rows</h>";
-        echo "<p id='messageFeedback' class='errorMessage'>Message!</p>";
+        echo "<p id='messageFeedback' class='errorMessage'></p>";
         echo "<table id='student_table'>";
         echo "<tr id='header_row'><th>Last Name</th><th>First Name</th><th>Name ID</th><th>Campus ID</th><th>Role</th><th>Discussion Section</th><th>Actions</th></tr>";
         if ($result_list->num_rows > 0) {
@@ -70,7 +70,6 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
     ?>
 <script>
     function deleteStudent(button) {
-        //alert("<?php echo $result_list->num_rows?>")
         let ajaxQuery = new XMLHttpRequest();
         let student_name_id = button.id.split("_")[1]; // Gets UMBC Name Id of Student
         ajaxQuery.onreadystatechange = function() {
