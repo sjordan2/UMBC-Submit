@@ -6,3 +6,4 @@
 .idea/workspace.xml
 *.xml
 *.meta
+.DS_Store
