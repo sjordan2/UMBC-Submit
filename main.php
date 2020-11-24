@@ -222,5 +222,6 @@
                 ajaxQuery.send(studentData);
             }
         }
+        document.getElementById('students_file').value = "";
     }
 </script>

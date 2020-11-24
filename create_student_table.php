@@ -20,8 +20,9 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
                         umbc_id VARCHAR(30) NOT NULL,
                         firstname VARCHAR(30) NOT NULL,
                         lastname VARCHAR(30) NOT NULL,
-                        section INT(2) NOT NULL,
-                        role VARCHAR(30) NOT NULL
+                        section INT(3) NOT NULL,
+                        role VARCHAR(30) NOT NULL,
+                        status VARCHAR(15) NOT NULL
                         )";
 		if ($conn->query($newtable_sql) === TRUE) {
             echo "'Students' table successfully created!";

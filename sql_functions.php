@@ -7,9 +7,9 @@ function addStudentToDatabase($nameID, $campusID, $firstName, $lastName, $discus
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-    $newstudent_sql = "INSERT INTO Students (umbc_name_id, umbc_id, firstname, lastname, section, role)
+    $newstudent_sql = "INSERT INTO Students (umbc_name_id, umbc_id, firstname, lastname, section, role, status)
                     VALUES ('$nameID', '$campusID', '$firstName',
-                   '$lastName', '$discussion', '$role')";
+                   '$lastName', '$discussion', '$role', 'Active')";
     if ($conn->query($newstudent_sql) === TRUE) {
         $success_message = "SUCCESS: " . $firstName . " " . $lastName
             . " (" . $nameID . ") has been added to the database!";
