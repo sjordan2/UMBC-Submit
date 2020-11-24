@@ -1,8 +1,5 @@
-<?php
-session_start();
-
-?>
 <html lang="en">
+<body>
 <style>
     body {background-color: #F1C04B}
     #newstudent_form {text-align: center;
@@ -26,7 +23,6 @@ session_start();
         color: white;
     }
 </style>
-<body>
 
 	<form method="post" action="javascript:validateForm()" id="newstudent_form">
 	<label for="student_first_name">
@@ -70,9 +66,9 @@ session_start();
     <p id='discussionSectionFeedback' class='errorMessage'>The student's discussion section must be a number!</p>
 
     Student's Role:<br>
-    <input type="radio" id="studentRadio" name="role" value="student">
+    <input type="radio" id="studentRadio" name="role" value="Student">
     <label for="studentRadio">Student</label>
-    <input type="radio" id="taRadio" name="role" value="ta">
+    <input type="radio" id="taRadio" name="role" value="TA">
     <label for="taRadio">TA</label>
     <br>
 
@@ -88,11 +84,13 @@ session_start();
     </button>
     <p id="viewRosterMessage" class=errorMessage></p><br><br>
 
-    <form enctype="multipart/form-data" action="upload_students.php" method="POST">
-        <input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
-        Student Roster: <input name="students_file" type="file" /><br>
-        <input type="submit" value="Upload Student Roster to Server" />
-    </form>
+
+    Student Roster:
+    <input type="file" name="students_file" id="students_file"><br>
+    <button id="submitStudentFile" onclick="submitStudentRoster()">
+        Upload Student Roster to Database
+    </button>
+    <p id="studentFileMessage" class=errorMessage></p><br><br>
 
 
 </body>
@@ -158,7 +156,7 @@ session_start();
                     newStudentMessage.style.display = 'block';
                 }
             };
-            ajaxQuery.open("POST", "new_student.php", true);
+            ajaxQuery.open("POST", "add_single_student.php", true);
             ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             ajaxQuery.send("fname=" + studentFirstName + "&lname=" + studentLastName + "&cID=" + studentCampusId
                             + "&nID=" + studentNameId + "&disc=" + studentDiscussion + "&role=" + studentRole);
@@ -177,7 +175,6 @@ session_start();
         ajaxQuery.onreadystatechange = function() {
             if(this.readyState === 4 && this.status === 200) {
                 let prefix = this.responseText;
-                console.log(this.responseText);
                 prefix = prefix.substring(0, 5);
                 let viewRosterMessage = document.getElementById("viewRosterMessage");
                 viewRosterMessage.innerText = this.responseText;
@@ -192,5 +189,38 @@ session_start();
         ajaxQuery.open("POST", "create_student_table.php", true);
         ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         ajaxQuery.send();
+    }
+
+    function submitStudentRoster() {
+
+        let rexOutput = document.getElementById("students_file").files[0];
+        let studentFileMessage = document.getElementById("studentFileMessage");
+        if(rexOutput === undefined) {
+            studentFileMessage.innerText = "You must select a file to upload!";
+            studentFileMessage.style.display = 'block';
+        } else {
+            if(rexOutput['name'].split(".")[1] !== "csv") {
+                studentFileMessage.innerText = "ERROR: The file must be in CSV format!";
+                studentFileMessage.style.display = 'block';
+            } else {
+                studentFileMessage.innerText = "Uploading " + rexOutput['name'] + "...";
+                studentFileMessage.style.color = "#0073ca"
+                studentFileMessage.style.display = 'block';
+
+                let ajaxQuery = new XMLHttpRequest();
+                let studentData = new FormData();
+                studentData.append("students_file", rexOutput);
+                ajaxQuery.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        if(this.responseText.substr(0, 7) === "SUCCESS") {
+                            studentFileMessage.style.color = "#3f9b42"
+                        }
+                        studentFileMessage.innerText = this.responseText;
+                    }
+                };
+                ajaxQuery.open("POST", "upload_students.php", true);
+                ajaxQuery.send(studentData);
+            }
+        }
     }
 </script>
