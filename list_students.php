@@ -19,7 +19,9 @@
     th, td {
         padding: 5px;
     }
-    h {font-size: 30px}
+    h {
+        font-size: 30px
+    }
     p.errorMessage {
         display: none;
     }

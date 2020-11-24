@@ -1,5 +1,4 @@
 <html lang="en">
-<body>
 <style>
     body {background-color: #F1C04B}
     #newstudent_form {text-align: center;
@@ -8,7 +7,7 @@
     p.errorMessage {
         display: none;
         color: red;
-        margin: 0px;
+        margin: 0;
     }
     button {
         background-color: white;
@@ -23,6 +22,7 @@
         color: white;
     }
 </style>
+<body>
 
 	<form method="post" action="javascript:validateForm()" id="newstudent_form">
 	<label for="student_first_name">
