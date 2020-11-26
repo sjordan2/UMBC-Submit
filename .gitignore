@@ -1,9 +1,6 @@
-
-.idea/codeStyles/codeStyleConfig.xml
-.idea/modules.xml
-.idea/UMBC-Submit.iml
-.idea/vcs.xml
-.idea/workspace.xml
+.idea/*
 *.xml
 *.meta
 .DS_Store
+/composer.phar
+/composer.lock

@@ -151,7 +151,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
         for(let rowCounter = 1; rowCounter < rowList.length; rowCounter++) {
             let rowHasElement;
             let elementList = rowList[rowCounter].getElementsByTagName('td'); // Returns list of elements to iterate through
-            for(let elemCounter = 0; elemCounter < elementList.length - 2; elemCounter++) {
+            for(let elemCounter = 0; elemCounter < elementList.length - 3; elemCounter++) {
                 if(elementList[elemCounter].innerText.toString().toLowerCase().includes(currSearchTerm)) {
                     rowHasElement = true;
                 }
