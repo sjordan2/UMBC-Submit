@@ -21,3 +21,23 @@ function addStudentToDatabase($nameID, $campusID, $firstName, $lastName, $discus
         echo $error_message;
     }
 }
+function getFullNameFromCampusID($campusID, $conn) {
+    $campusID_sql = "SELECT lastname, firstname FROM Students WHERE umbc_id = '$campusID'";
+    $result = $conn->query($campusID_sql);
+    if($result->num_rows != 1) {
+        return "ERROR";
+    } else {
+        $row = $result->fetch_assoc();
+        return $row['firstname'] . " " . $row['lastname'];
+    }
+}
+function getEnrollment($campusID, $conn) {
+    $campusID_sql = "SELECT role FROM Students WHERE umbc_id = '$campusID'";
+    $result = $conn->query($campusID_sql);
+    if($result->num_rows < 1) {
+        return false;
+    } else {
+        $row = $result->fetch_assoc();
+        return $row['role'];
+    }
+}

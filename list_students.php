@@ -64,7 +64,7 @@
 
 <?php
 
-include 'db_sql.php';
+include 'sql_functions.php';
 
 // Create connection
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
@@ -84,7 +84,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
         // output data of each row
         $counter = 0;
         while($row = $result_list->fetch_assoc()) {
-            $student_id = 'student_row_' . $row['umbc_name_id'];
+            $student_id = 'student_row_' . $row['umbc_id'];
             echo "<tr id=$student_id>";
             foreach($row as $element) {
                 if($element == "Active") {
@@ -97,8 +97,8 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
                 echo $element;
                 echo "</td>";
             }
-            $deleteid = "del_" . $row['umbc_name_id'];
-            $editid = "edit_" . $row['umbc_name_id'];
+            $deleteid = "del_" . $row['umbc_id'];
+            $editid = "edit_" . $row['umbc_id'];
             echo "<td><button class='delete_button' id=$deleteid onclick='deleteStudent(this)'>Remove from Database</button>
                         <button class='edit_button' id=$editid onclick='editStudent(this)'>Edit</button></td>";
             echo "</tr>";
@@ -109,12 +109,12 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
     ?>
 <script>
     function deleteStudent(button) {
-        let student_name_id = button.id.split("_")[1]; // Gets UMBC Name Id of Student
-        if(confirm("Are you sure you want to delete this student (" + student_name_id + ")?")) {
+        let student_campus_id = button.id.split("_")[1]; // Gets UMBC Campus Id of Student
+        if(confirm("Are you sure you want to delete this student (" + student_campus_id + ")?")) {
             let ajaxQuery = new XMLHttpRequest();
             ajaxQuery.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
-                    let studentRowId = "student_row_" + student_name_id;
+                    let studentRowId = "student_row_" + student_campus_id;
                     let studentRow = document.getElementById(studentRowId);
                     studentRow.parentNode.removeChild(studentRow);
                     let studentTable = document.getElementById("student_table");
@@ -135,7 +135,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
             };
             ajaxQuery.open("POST", "delete_student.php", true);
             ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            ajaxQuery.send("sname=" + student_name_id);
+            ajaxQuery.send("student_id=" + student_campus_id);
         }
     }
     function editStudent(button) {

@@ -16,8 +16,8 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
         echo "Already done!";
 	} else {
 		$newtable_sql = "CREATE TABLE Students (
-                        umbc_name_id VARCHAR(30) PRIMARY KEY,
-                        umbc_id VARCHAR(30) NOT NULL,
+                        umbc_id VARCHAR(30) PRIMARY KEY,
+                        umbc_name_id VARCHAR(30) NOT NULL,
                         firstname VARCHAR(30) NOT NULL,
                         lastname VARCHAR(30) NOT NULL,
                         section INT(3) NOT NULL,
