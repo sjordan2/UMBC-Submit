@@ -16,6 +16,7 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+ensureAssignmentsTableCreation($conn);
 
 if (isset($_REQUEST['logout'])) {
     header('Location: https://www.csee.umbc.edu');
@@ -92,8 +93,8 @@ if (isset($_REQUEST['logout'])) {
         echo "<li><a href='assignments.php'>View Assignments</a></li>
                 <li><a href='grade.php'>Grade Assignments</a></li>";
     } else if(getEnrollment(phpCAS::getUser(), $conn) === "Instructor") {
-        echo "<li><a href='assignments.php'>View Assignments</a></li>
-                <li><a href='administration.php' style='color: red'>Administration</a></li>";
+        echo "<li><a href='administration/user_management.php' style='color: red'>User Management</a></li>
+            <li><a href='administration/assignment_management.php' style='color: red'>Assignment Management</a></li>";
     }
     if(getEnrollment(phpCAS::getUser(), $conn) !== false) {
         echo '<li style="float:right"><a id="userButton" onclick="logoutDropdown()">';
@@ -115,6 +116,7 @@ if($UNENROLLED_STUDENT === true) {
     echo "<p style='font-size: xx-large;text-align: center'>Oh no! It appears that you are not registered for this course!</p>";
 }
 ?>
+
 </html>
 
 <script>

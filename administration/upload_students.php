@@ -40,13 +40,13 @@ for($index = 0; $index < count($headerArray); $index++) {
     }
 }
 
-require_once 'sql_functions.php';
+require_once '../sql_functions.php';
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 $totalCounter = 0;
 while (($line = fgetcsv($students_file, 0, $fileDelimiter)) !== FALSE) {
     // This is assuming that lecture sections are "10, 20, 30", etc. and discussion sections are "11, 34, 56" etc.
     if(intval($line[$discussionColumn]) % 10 !== 0) { // If the row denotes a discussion section, not a lecture section
-        addStudentToDatabase($line[$nameIDColumn], $line[$campusIDColumn], $line[$firstNameColumn],
+        addUserToDatabase($line[$nameIDColumn], $line[$campusIDColumn], $line[$firstNameColumn],
             $line[$lastNameColumn], $line[$discussionColumn], "Student", $conn, false);
         $totalCounter++;
     }

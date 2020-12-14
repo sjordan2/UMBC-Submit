@@ -1,5 +1,5 @@
 <?php
-include 'db_sql.php';
+include '../sql_functions.php';
 
 $student_first_name = $_POST['fname'];
 $student_last_name = $_POST['lname'];
@@ -17,7 +17,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$newstudent_sql = "INSERT INTO Students (umbc_name_id, umbc_id, firstname, lastname, section, role)
+$newstudent_sql = "INSERT INTO Users (umbc_name_id, umbc_id, firstname, lastname, section, role)
                     VALUES ('$student_name_id', '$student_campus_id', '$student_first_name',
                    '$student_last_name', '$student_discussion', '$student_role')";
 
