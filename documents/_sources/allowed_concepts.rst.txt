@@ -1,0 +1,23 @@
+.. CMSC 201 Assignments documentation master file, created by
+   sphinx-quickstart on Sat Oct  3 01:06:37 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Allowed Concepts
+================
+
+Functions
+---------
+
+``print()``
+
+``input()``
+
+.. code-block:: python
+   :emphasize-lines: 3,5
+
+   def some_function():
+       interesting = False
+       print 'This line is highlighted.'
+       print 'This one is not...'
+       print '...but this one is.'

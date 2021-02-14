@@ -1,0 +1,21 @@
+Dear {{firstname}} {{lastname}},
+
+Our records indicate that you are currently enrolled in CMSC 201 (Computer Science I) at UMBC.
+
+In order to submit, view, and test the coding assignments that you will write for this course, we will be using the UMBC Submit System, an online web portal sponsored by the CSEE Department.
+
+You can access the web portal by clicking on this link: {{weblink}}.
+
+Here is the information that we have for your enrollment in this course:
+
+Name: {{firstname}} {{lastname}}
+UMBC ID: {{umbcid}}
+Username: {{umbcnameid}}
+Role: {{role}}
+Section: {{section}}
+
+If any of this information is incorrect, or if you are not enrolled in this course, then please don't hesitate to contact us at the emails listed below.
+
+Thank you, and we look forward to having a great semester together!
+
+Sincerely,

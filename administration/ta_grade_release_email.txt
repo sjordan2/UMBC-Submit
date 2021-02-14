@@ -1,0 +1,26 @@
+Well how do you do, fellow Teaching Assistant?
+
+The grades for {{assignment_name}} have been released to students. You know what that means!
+A bunch of emails from students complaining about their grades! Yayyyy!
+
+Here are some statistics for your section:
+
+Teaching Assistant: {{umbc_name_id}}
+Section: {{section}}
+Maximum Points Possible: {{max_points}}
+
+Number of Students in Section: {{num_students}}
+Section Average: {{section_average}}
+Section Median: {{section_median}}
+Section Standard Deviation: {{section_sd}}
+
+Number of Students in Course: {{total_num_students}}
+Class Average: {{total_average}}
+Class Median: {{total_median}}
+Class Standard Deviation: {{total_sd}}
+
+The CMSC 201 Empire thanks you for being a faithful servant to the cause.
+
+Remember to get rekt!
+
+Sincerely,

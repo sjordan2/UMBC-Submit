@@ -13,7 +13,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$getCurrentAssignmentDueDate_sql = "SELECT assignment_name, date_due FROM Assignments WHERE assignment_name = '$assignment_name'";
+$assignment_name_sql = $conn->real_escape_string($assignment_name);
+
+$getCurrentAssignmentDueDate_sql = "SELECT assignment_name, date_due FROM Assignments WHERE assignment_name = '$assignment_name_sql'";
 $currAssignmentDueDate = $conn->query($getCurrentAssignmentDueDate_sql)->fetch_assoc()['date_due'];
 
 $date_currAssignment = null;
@@ -36,13 +38,13 @@ if($date_proposedDue < $date_current) {
         $getCampusID_sql = "SELECT umbc_id FROM Users WHERE umbc_name_id = '$student_name_id'";
         $queried_studentID = $conn->query($getCampusID_sql)->fetch_assoc()['umbc_id'];
 
-        $checkIfStudentHasExtension_sql = "SELECT student_id FROM Extensions WHERE assignment = '$assignment_name' AND student_id = '$queried_studentID'";
+        $checkIfStudentHasExtension_sql = "SELECT student_id FROM Extensions WHERE assignment = '$assignment_name_sql' AND student_id = '$queried_studentID'";
         $studentResult = $conn->query($checkIfStudentHasExtension_sql);
         if ($studentResult->num_rows > 0) {
             echo "ERROR: That student already has an extension for " . $assignment_name . "!";
         } else {
             $newextension_sql = "INSERT INTO Extensions (assignment, student_id, date_granted, new_due_date)
-                        VALUES ('$assignment_name', '$queried_studentID', '$date_granted', '$new_due_date')";
+                        VALUES ('$assignment_name_sql', '$queried_studentID', '$date_granted', '$new_due_date')";
             if ($conn->query($newextension_sql) === TRUE) {
                 $success_message = "SUCCESS: " . $_POST['student'] . " has been granted an extension for " . $assignment_name . "!";
                 echo $success_message;

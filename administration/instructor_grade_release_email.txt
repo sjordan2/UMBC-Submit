@@ -1,0 +1,18 @@
+Well how do you do, oh great and powerful course administrator?
+
+The grades for {{assignment_name}} have been released to students.
+
+Here are some statistics for the entire course:
+
+Maximum Points Possible: {{max_points}}
+
+Number of Students in Course: {{total_num_students}}
+Class Average: {{total_average}}
+Class Median: {{total_median}}
+Class Standard Deviation: {{total_sd}}
+
+Eventually, there will be statistics for the specific parts of the assignment, but Sean is lazy and has MATH 301 homework to do. :(
+
+The CMSC 201 Empire thanks you for being a faithful servant to the cause.
+
+Sincerely,

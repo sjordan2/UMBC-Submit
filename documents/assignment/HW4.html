@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Homework 4 - More Loops &mdash; CMSC 201 Assignments  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/text_formatting.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Homework 3" href="HW3.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> CMSC 201 Assignments
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../allowed_concepts.html">Allowed Concepts</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Homeworks:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="HW1.html">Homework 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HW2.html">Homework 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HW3.html">Homework 3</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Homework 4 - More Loops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#instructions">Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-instructions">Additional Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#coding-standards">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-specifications">Additional Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#allowed-keywords-built-ins">Allowed Keywords/Built-Ins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#questions">Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hw4-part1-py">hw4_part1.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hw4-part2-py">hw4_part2.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hw4-part3-py">hw4_part3.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hw4-part4-py">hw4_part4.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hw4-part5-py">hw4_part5.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submitting">Submitting</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CMSC 201 Assignments</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Homework 4 - More Loops</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/assignment/HW4.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="homework-4-more-loops">
+<h1>Homework 4 - More Loops<a class="headerlink" href="#homework-4-more-loops" title="Permalink to this headline">¶</a></h1>
+<p><strong>Due Date</strong>: Friday, October 2nd, 2020 by 11:59:59 PM
+<strong>Value</strong>: 50 points</p>
+<p><span class="red">This assignment falls under the standard cmsc201 academic integrity policy.</span>
+<span class="red">This means you should not discuss/show/copy/distribute your solutions, your code or your main ideas for the solutions to any other student.</span>
+<span class="red">Also, you should not post these problems on any forum, internet solutions website, etc.</span></p>
+<p>Make sure that you have a <strong>complete file header comment at the top of each file</strong>, and that all of the information is correctly filled out.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">File:    FILENAME.py</span>
+<span class="sd">Author:  YOUR NAME</span>
+<span class="sd">Date:    THE DATE</span>
+<span class="sd">Section: YOUR DISCUSSION SECTION NUMBER</span>
+<span class="sd">E-mail:  YOUR_EMAIL@umbc.edu</span>
+<span class="sd">Description:</span>
+<span class="sd">   DESCRIPTION OF WHAT THE PROGRAM DOES</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="instructions">
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">¶</a></h2>
+<p>For each of the questions below, you are given a problem that you must solve or a task you must complete.</p>
+<p>You should already be familiar with variables, expressions, <code class="docutils literal notranslate"><span class="pre">input()</span></code>, and <code class="docutils literal notranslate"><span class="pre">print()</span></code>.  You should also be familiar with one-way, two-way, and multi-way decision structures.</p>
+<p>This assignment will focus on implementing algorithms using <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">while</span></code> loops, including any boolean logic needed.</p>
+<p>At the end, your Homework 4 files must run without any errors.</p>
+<p><span class="red">NOTE: Your filenames for this homework must match the given ones exactly.</span>
+<span class="red">And remember, filenames are case sensitive!</span></p>
+</div>
+<div class="section" id="additional-instructions">
+<h2>Additional Instructions<a class="headerlink" href="#additional-instructions" title="Permalink to this headline">¶</a></h2>
+<p><strong>Creating the hw4 Directory</strong></p>
+<p>During the semester, you’ll want to keep your different Python programs organized, organizing them in appropriately named folders (also known as directories).</p>
+<p>Just as you did for previous homeworks, you should create a directory to store your Homework 4 files.  We recommend calling it hw4, and creating it inside the Homeworks directory inside the cmsc201 directory.</p>
+<p>If you need help on how to do this, refer back to the detailed instructions in Homework 1.  (You don’t need to make a separate folder for each file.  You should store all of the Homework 4 files in the same hw4 folder.)</p>
+</div>
+<div class="section" id="coding-standards">
+<h2>Coding Standards<a class="headerlink" href="#coding-standards" title="Permalink to this headline">¶</a></h2>
+<p>Coding standards can be found <a class="reference external" href="https://docs.google.com/document/d/1hxv3Lp1TT4xe1HTm3nGBN7EXfq0pMjP40-yfrN4rKRI/">here</a>.</p>
+<p>For now, you should pay special attention to the sections about:</p>
+<ul class="simple">
+<li><p>Naming Conventions</p></li>
+<li><p>Use of Whitespace</p></li>
+<li><p>Constants</p></li>
+<li><p>Comments (specifically, File Header Comments)</p></li>
+</ul>
+</div>
+<div class="section" id="additional-specifications">
+<h2>Additional Specifications<a class="headerlink" href="#additional-specifications" title="Permalink to this headline">¶</a></h2>
+<p>For this assignment, <span class="red">you must use</span> <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> as discussed in class.</p>
+<p>For this assignment, <strong>you do need to worry about “input validation” on a number of the problems</strong>.
+Many of the parts of this assignment center on validating input from the user.
+For example, the user may enter a negative value, but your program may require a positive value.
+<strong>Make sure to follow each part’s instructions about input validation.</strong>
+If the user enters a different type of data than what you asked for, your program may crash.
+This is acceptable.</p>
+<p>For example, if your program asks the user to enter a whole number, it is acceptable if your program crashes if they enter something else like “dog” or “twenty” or “88.2” instead.</p>
+<p>Here is what that might look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Please</span> <span class="n">enter</span> <span class="n">a</span> <span class="n">number</span><span class="p">:</span> <span class="n">twenty</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="n">File</span> <span class="s2">&quot;test_file.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">10</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+   <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Please enter a number: &quot;</span><span class="p">))</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">literal</span> <span class="k">for</span> <span class="nb">int</span><span class="p">()</span> <span class="k">with</span> <span class="n">base</span> <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;twenty&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="allowed-keywords-built-ins">
+<h2>Allowed Keywords/Built-Ins<a class="headerlink" href="#allowed-keywords-built-ins" title="Permalink to this headline">¶</a></h2>
+<p>For this assignment you should use:</p>
+<ol class="arabic simple">
+<li><p>For loops, with either range, len</p></li>
+<li><p>Lists, declaration, in keyword, append and remove functions, len</p></li>
+<li><p>if/elif/else</p></li>
+<li><p>print, string formatting is up to you</p></li>
+<li><p>input</p></li>
+<li><p>casting</p></li>
+<li><p>variable declaration and assignment, algebra</p></li>
+<li><p>String operations split(), strip(), concatenation (+)</p></li>
+<li><p>while loops</p></li>
+</ol>
+</div>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>Each question is worth the indicated number of points.
+Following the coding standards is worth 4 points.
+If you do not have complete file headers and correctly named files, you will lose points.</p>
+</div>
+<div class="section" id="hw4-part1-py">
+<h2>hw4_part1.py<a class="headerlink" href="#hw4-part1-py" title="Permalink to this headline">¶</a></h2>
+<p><strong>hw4_part1.py - Rock, Paper, Scissors  (10 points)</strong></p>
+<p>Implement the game of rock paper scissors.  Recall that the game works as such where the arrows direct victory:</p>
+<p>This means that paper beats rock, rock beats scissors, and scissors beats paper.</p>
+<p>You should loop while the user doesn’t enter “stop”.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">the_choice</span> <span class="pre">=</span> <span class="pre">choice(['rock',</span> <span class="pre">'paper',</span> <span class="pre">'scissors'])</span></code> to get a random computer choice.</p>
+<p>You will need to import the following modules under your header comment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">seed</span>
+</pre></div>
+</div>
+<p>For testing purposes, you must have this bit of code above your <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+   <span class="n">seed</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Here is some sample output for <code class="docutils literal notranslate"><span class="pre">hw4_part1.py</span></code>, with the user input in blue.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux[0]$ python3 hw4_part1.py
+Enter rock, paper, or scissors to play, stop to end.  rock
+Rock crushes scissors, you win.
+Enter rock, paper, or scissors to play, stop to end.  paper
+Both paper, there is a tie.
+Enter rock, paper, or scissors to play, stop to end.  scissors
+Rock crushes scissors, you lose.
+Enter rock, paper, or scissors to play, stop to end.  blah
+You need to select rock, paper or scissors.
+Enter rock, paper, or scissors to play, stop to end.  rock
+Paper covers rock, you lose.
+Enter rock, paper, or scissors to play, stop to end.  rock
+Both rock, there is a tie.
+Enter rock, paper, or scissors to play, stop to end.  scissors
+Both scissors, there is a tie.
+Enter rock, paper, or scissors to play, stop to end.  paper
+Both paper, there is a tie.
+Enter rock, paper, or scissors to play, stop to end.  paper
+Paper covers rock, you win.
+Enter rock, paper, or scissors to play, stop to end.  stop
+</pre></div>
+</div>
+</div>
+<div class="section" id="hw4-part2-py">
+<h2>hw4_part2.py<a class="headerlink" href="#hw4-part2-py" title="Permalink to this headline">¶</a></h2>
+<p><strong>hw4_part2.py (10 points) - Caesar Salad Cipher</strong></p>
+<p>We’re going to implement a Caesar Salad Cipher here.
+The standard Caesar Cipher works this way:</p>
+<p>You pick an offset. Then for each letter, you’ll move it up by that offset. So for instance:</p>
+<ul class="simple">
+<li><p>‘abc’ with offset 3 will become ‘def’</p></li>
+<li><p>‘Hello’ with offset 7 will become ‘Olssv’</p></li>
+<li><p>‘Robot’ with offset 0 will become ‘Robot’</p></li>
+</ul>
+<p>We are not going to change anything which is not an ASCII uppercase or lowercase letter.</p>
+<p>The equation is generally:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">new_char</span> <span class="pre">=</span> <span class="pre">old_char</span> <span class="pre">+</span> <span class="pre">offset</span></code></p>
+</div></blockquote>
+<p>But because ‘z’ + offset won’t be in range you’ll want to use mod.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">new_char</span> <span class="pre">=</span> <span class="pre">(old_char</span> <span class="pre">+</span> <span class="pre">offset)</span> <span class="pre">%</span> <span class="pre">26</span></code></p>
+</div></blockquote>
+<p>But what you ask, is a <strong>Caesar Salad Cipher</strong>?</p>
+<p>Well in this case, what it does is not just add an offset, but it also will add the index squared to each position (starting at zero):</p>
+<p>(Assuming that characters are between 0 and 25 instead of their ASCII values.):</p>
+<p><strong>new_char (at index i) = (old_char(at index i) + i2 + offset) mod 26</strong></p>
+<p>This means that:</p>
+<ul class="simple">
+<li><p>‘Hello’ encrypts to ‘Omwbl’ (with offset 7)</p></li>
+<li><p>‘Robot’ encrypts to ‘Usiam’ (with offset 3)</p></li>
+</ul>
+<p>What you will need for this problem:</p>
+<ul class="simple">
+<li><p>Uppercase ASCII letters start at ord(c) == 65 and go up to 90 (inclusively)</p></li>
+<li><p>Lowercase ASCII letters start at ord(c) == 97 and go up to 122 (inclusively).</p></li>
+<li><p>chr(my_int) will convert my_int into a character.  If your character is not a potential ASCII value, you’ll get an error.</p></li>
+<li><p>ord(my_char) will convert a character to its ASCII/unicode value.</p></li>
+<li><dl class="simple">
+<dt>You should get the value of a letter like this:</dt><dd><ul>
+<li><p>uppercase: ord(char) - 65</p></li>
+<li><p>lowercase: ord(char) - 97</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>When you convert back to a character you need to add that value back:</dt><dd><ul>
+<li><p>uppercase: chr(value + 65)</p></li>
+<li><p>lowercase: chr(value + 97)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>In order to keep it in range, you’ll probably want to use mod.</p></li>
+<li><p>If it is not an alphabetical character, do nothing, even to numbers. This prevents us from accidentally mapping into ASCII characters which don’t render on the screen properly.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux[0]$ python3 hw4_part2.py
+What is the string to encrypt? (or stop)Hello
+What is the offset? 7
+The encrypted string is: Omwbl
+What is the string to encrypt? (or stop)Robot
+What is the offset? 3
+The encrypted string is: Usiam
+What is the string to encrypt? (or stop)bucket of goo
+What is the offset? 50
+The encrypted string is: ztersq jp ada
+What is the string to encrypt? (or stop)gaul is divided into three parts
+What is the offset? 6
+The encrypted string is: mhea ni vrxfxxx kwlr ydgol wkgpx
+What is the string to encrypt? (or stop)stop
+</pre></div>
+</div>
+</div>
+<div class="section" id="hw4-part3-py">
+<h2>hw4_part3.py<a class="headerlink" href="#hw4-part3-py" title="Permalink to this headline">¶</a></h2>
+<p><strong>hw4_part3.py - (10 points) - Draw a Circle, But Don’t Stand in It</strong></p>
+<p>Let’s draw a circle. Remember the circle equation with center (a,b) and radius r is:</p>
+<div class="math notranslate nohighlight">
+\[(x-a)^2 + (y-b)^2 = r^2\]</div>
+<p>Pretend that (a, b) = (0,0) and we’ll restrict the radius between 0 and 20.</p>
+<p>So the new equation is just:</p>
+<div class="math notranslate nohighlight">
+\[x^2 + y^2 = r^2\]</div>
+<p>In order to draw a circle you remember that the possible values for x and y are between:</p>
+<div class="math notranslate nohighlight">
+\[-r &lt;= x, y &lt;= r\]</div>
+<p>So you’re going to need to modify your range to make sure you get the negative sides.</p>
+<p>The circle will be oblong, really kind of an ellipse, mainly because you see that the characters are higher than they are wide.
+But don’t worry about that too much/at all.
+Don’t try to fix it by drawing an ellipse with major and minor axes in inverse proportion to character height/width.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux[0]$ python3 hw4_part3.py
+What is the radius? (between 0 and 20) 3
+   *
+ *****
+ *****
+*******
+ *****
+ *****
+   *
+
+linux[1]$ python3 hw4_part3.py
+What is the radius? (between 0 and 20) 9
+         *
+     *********
+    ***********
+   *************
+  ***************
+ *****************
+ *****************
+ *****************
+ *****************
+*******************
+ *****************
+ *****************
+ *****************
+ *****************
+  ***************
+   *************
+    ***********
+     *********
+         *
+</pre></div>
+</div>
+</div>
+<div class="section" id="hw4-part4-py">
+<h2>hw4_part4.py<a class="headerlink" href="#hw4-part4-py" title="Permalink to this headline">¶</a></h2>
+<p><strong>hw4_part4.py (10 points) - Checkerboard of Cards</strong></p>
+<p>Take in the size of a game-board and then draw an alternating pattern.</p>
+<p>The symbols are <code class="docutils literal notranslate"><span class="pre">'\u2660',</span> <span class="pre">'\u2665',</span> <span class="pre">'\u2666',</span> <span class="pre">'\u2663'</span></code>.
+They are unicode symbols using the escape sequence <code class="docutils literal notranslate"><span class="pre">\u</span></code> followed by 4 hexadecimal digits (keep them in this order).</p>
+<p>Each row should start at the next element in the list to produce somewhat of a cycling pattern.
+Within each row, you should simply cycle through the elements in order.</p>
+<p>So for row 0 you start with offset 0, and go through the list until you’re at whatever length the user inputs.</p>
+<ul class="simple">
+<li><p>For row 0, you start on u2660 and cycle through.</p></li>
+<li><p>For row 1, you start on u2665 and cycle through.</p></li>
+<li><p>For row 2, you start on u2666 and cycle through.</p></li>
+<li><p>For row 3, you start on u2663 and cycle through.</p></li>
+<li><p>For row 4, you start on u2660 again and cycle through.</p></li>
+<li><p>…</p></li>
+</ul>
+<p>In order to be able to print single characters, you should use end=’’ optional keyword argument in print like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">something</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That will ensure that there is no newline, tab, or space after each printed character.  (Default is end=’n’)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux[0]$ python3 hw4_part4.py
+What size of board do you want? (between 1 and 50) 8
+♠♥♦♣♠♥♦♣
+♥♦♣♠♥♦♣♠
+♦♣♠♥♦♣♠♥
+♣♠♥♦♣♠♥♦
+♠♥♦♣♠♥♦♣
+♥♦♣♠♥♦♣♠
+♦♣♠♥♦♣♠♥
+♣♠♥♦♣♠♥♦
+
+linux[1]$ python3 hw4_part4.py
+What size of board do you want? (between 1 and 50) 4
+♠♥♦♣
+♥♦♣♠
+♦♣♠♥
+♣♠♥♦
+
+linux[2]$ python3 hw4_part4.py
+What size of board do you want? (between 1 and 50) 2
+♠♥
+♥♦
+
+linux[3]$ python3 hw4_part4.py
+What size of board do you want? (between 1 and 50) 6
+♠♥♦♣♠♥
+♥♦♣♠♥♦
+♦♣♠♥♦♣
+♣♠♥♦♣♠
+♠♥♦♣♠♥
+♥♦♣♠♥♦
+</pre></div>
+</div>
+</div>
+<div class="section" id="hw4-part5-py">
+<h2>hw4_part5.py<a class="headerlink" href="#hw4-part5-py" title="Permalink to this headline">¶</a></h2>
+<p><strong>hw4_part5.py - (10 points) - Number Guesser</strong></p>
+<p>You must implement a number guesser.
+Then you should ask the user for guesses until they guess the number.</p>
+<ul class="simple">
+<li><p>If the number is too big, tell them that.</p></li>
+<li><p>If the number is too small, tell them that.</p></li>
+<li><p>You should count the number of steps it took, and tell the user at the end.</p></li>
+</ul>
+<p>You will need to import the following modules under your header comment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">seed</span>
+</pre></div>
+</div>
+<p>For testing purposes, you must have this bit of code above your <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+   <span class="n">seed</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To use <code class="docutils literal notranslate"><span class="pre">randint</span></code>, you should specify the lower and upper bound (inclusive) in this case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux[0]$ python3 hw4_part5.py
+Guess a number between 1 and 100: 50
+Your guess is too low.
+Guess a number between 1 and 100: 72
+Your guess is too high.
+Guess a number between 1 and 100: 65
+Your guess is too high.
+Guess a number between 1 and 100: 64
+Your guess is too high.
+Guess a number between 1 and 100: 62
+Your guess is too high.
+Guess a number between 1 and 100: 57
+You guessed the value!  It took you 6 steps.
+
+linux[1]$ python3 hw4_part5.py
+Guess a number between 1 and 100: 75
+Your guess is too low.
+Guess a number between 1 and 100: 80
+Your guess is too low.
+Guess a number between 1 and 100: 85
+Your guess is too low.
+Guess a number between 1 and 100: 90
+You guessed the value!  It took you 4 steps.
+
+linux[2]$ python3 hw4_part5.py
+Guess a number between 1 and 100: 30
+Your guess is too low.
+Guess a number between 1 and 100: 70
+Your guess is too high.
+Guess a number between 1 and 100: 50
+Your guess is too low.
+Guess a number between 1 and 100: 60
+Your guess is too high.
+Guess a number between 1 and 100: 55
+You guessed the value!  It took you 5 steps.
+</pre></div>
+</div>
+</div>
+<div class="section" id="submitting">
+<h2>Submitting<a class="headerlink" href="#submitting" title="Permalink to this headline">¶</a></h2>
+<p>Once your hw4_part1.py, hw4_part2.py, hw4_part3.py, hw4_part4.py, and hw4_part5.py files are complete, it is time to turn them in with the submit command.
+(You may also turn in individual files as you complete them. To do so, only submit those files that are complete.)</p>
+<p>You must be logged into your account on GL, and you must be in the same directory as your Homework 4 Python files. To double-check you are in the directory with the correct files, you can type <code class="docutils literal notranslate"><span class="pre">ls</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux1[3]% ls
+hw4_part1.py  hw4_part3.py  hw4_part5.py
+hw4_part2.py  hw4_part4.py
+linux1[4]% █
+</pre></div>
+</div>
+<p>To submit your Homework 3 Python files, we use the submit command, where the class is <code class="docutils literal notranslate"><span class="pre">cmsc201</span></code>, and the assignment is <code class="docutils literal notranslate"><span class="pre">HW4</span></code>.</p>
+<p>Type in (all on one line) <code class="docutils literal notranslate"><span class="pre">submit</span> <span class="pre">cmsc201</span> <span class="pre">HW4</span> <span class="pre">hw4_part1.py</span> <span class="pre">hw4_part2.py</span> <span class="pre">hw4_part3.py</span> <span class="pre">hw4_part4.py</span> <span class="pre">hw4_part5.py</span></code> and press enter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>linux1[4]% submit cmsc201 HW4 hw4_part1.py hw4_part2.py hw4_part3.py hw4_part4.py hw4_part5.py
+Submitting hw4_part1.py...OK
+Submitting hw4_part2.py...OK
+Submitting hw4_part3.py...OK
+Submitting hw4_part4.py...OK
+Submitting hw4_part5.py...OK
+linux1[5]% █
+</pre></div>
+</div>
+<p>If you don’t get a confirmation like the one above, check that you have not made any typos or errors in the command.</p>
+<p>You can check that your homework was submitted by following the directions in Homework 0.
+Double-check that you submitted your homework correctly, since an empty file will result in a grade of zero for this assignment.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="HW3.html" class="btn btn-neutral float-left" title="Homework 3" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Min Chon
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

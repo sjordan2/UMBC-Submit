@@ -1,0 +1,9 @@
+Dear {{firstname}} {{lastname}},
+
+Grades have been released for {{assignment_name}}.
+
+You can view your grade and your rubric on the web portal at the following link: {{web_grade_link}}.
+
+Thank you, and have a great rest of the day!
+
+Sincerely,

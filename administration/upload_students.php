@@ -1,10 +1,10 @@
 <?php
 
 const REX_LASTNAME = "StudentLastName"; // Last name column header in Rex
-const REX_FIRSTNAME = "StudentFirstName"; // Last name column header in Rex
-const REX_CAMPUSID = "StudentCampusID"; // Last name column header in Rex
-const REX_NAMEID = "StudentMyUMBCId"; // Last name column header in Rex
-const REX_DISCUSSION = "ClassNumberClassSectionSourceKey"; // Last name column header in Rex
+const REX_FIRSTNAME = "StudentFirstName"; // First name column header in Rex
+const REX_CAMPUSID = "StudentCampusID"; // Campus ID column header in Rex
+const REX_NAMEID = "StudentMyUMBCId"; // Name ID column header in Rex
+const REX_DISCUSSION = "ClassNumberClassSectionSourceKey"; // Lecture/Discussion Section column header in Rex
 
 $students_file = fopen($_FILES['students_file']['tmp_name'], 'r');
 $headerLine = fgets($students_file);

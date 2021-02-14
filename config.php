@@ -1,6 +1,7 @@
 <?php
 
 $phpcas_path = '../vendor/jasig/phpcas/';
+$php_nested_cas_path = '../../vendor/jasig/phpcas/';
 
 ///////////////////////////////////////
 // Basic Config of the phpCAS client //

@@ -13,7 +13,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$getCurrentAssignmentDueDate_sql = "SELECT assignment_name, date_due FROM Assignments WHERE assignment_name = '$assignment'";
+$assignment_sql = $conn->real_escape_string($assignment);
+
+$getCurrentAssignmentDueDate_sql = "SELECT assignment_name, date_due FROM Assignments WHERE assignment_name = '$assignment_sql'";
 $currAssignmentDueDate = $conn->query($getCurrentAssignmentDueDate_sql)->fetch_assoc()['date_due'];
 
 $date_currAssignment = null;
@@ -35,11 +37,11 @@ if($date_proposedDue < $date_current) {
     } else {
         $edit_extension_sql = "UPDATE Extensions 
                         SET new_due_date = '$new_due_date' 
-                        WHERE assignment = '$assignment' AND student_id = '$student_id'";
+                        WHERE assignment = '$assignment_sql' AND student_id = '$student_id'";
         $result = $conn->query($edit_extension_sql);
 
         if ($result === TRUE) {
-            $successMessage = "SUCCESS: " . $assignment . " extension for " . getFullNameFromCampusID($student_id, $conn) . " was successfully edited!";
+            $successMessage = "SUCCESS: The " . $assignment . " extension for " . getFullNameFromCampusID($student_id, $conn) . " was successfully edited!";
             echo $successMessage;
         } else {
             $errorMessage = "ERROR: " . $conn->error;

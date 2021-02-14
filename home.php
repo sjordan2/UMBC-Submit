@@ -16,7 +16,6 @@ $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-ensureAssignmentsTableCreation($conn);
 
 if (isset($_REQUEST['logout'])) {
     header('Location: https://www.csee.umbc.edu');
@@ -88,12 +87,16 @@ if (isset($_REQUEST['logout'])) {
     <?php
     if(getEnrollment(phpCAS::getUser(), $conn) === "Student") {
         echo "<li><a href='assignments.php'>View Assignments</a></li>
-                <li><a href='submit.php'>Submit Assignments</a></li>";
+                <li><a href='grades.php'>View Grades</a></li>";
     } else if(getEnrollment(phpCAS::getUser(), $conn) === "TA") {
         echo "<li><a href='assignments.php'>View Assignments</a></li>
-                <li><a href='grade.php'>Grade Assignments</a></li>";
+                <li><a href='grades.php'>View Grades</a></li>
+                <li><a href='ta/grade_submissions.php' style='color: deepskyblue'>Grade Submissions</a></li>";
     } else if(getEnrollment(phpCAS::getUser(), $conn) === "Instructor") {
-        echo "<li><a href='administration/user_management.php' style='color: red'>User Management</a></li>
+        echo "<li><a href='assignments.php'>View Assignments</a></li>
+                <li><a href='grades.php'>View Grades</a></li>
+            <li><a href='ta/grade.php' style='color: deepskyblue'>Grade Submissions</a></li>
+            <li><a href='administration/user_management.php' style='color: red'>User Management</a></li>
             <li><a href='administration/assignment_management.php' style='color: red'>Assignment Management</a></li>";
     }
     if(getEnrollment(phpCAS::getUser(), $conn) !== false) {
@@ -114,6 +117,8 @@ if (isset($_REQUEST['logout'])) {
 <?php
 if($UNENROLLED_STUDENT === true) {
     echo "<p style='font-size: xx-large;text-align: center'>Oh no! It appears that you are not registered for this course!</p>";
+} else {
+    echo "<p style='font-size: x-large;text-align: center'>Welcome to the UMBC Submit System! Please click 'View Assignments' in the top navigation bar to get started.</p><br><p style='font-size: x-large;text-align: center'>idk what to put here... a logo? announcement board? course information?</p>";
 }
 ?>
 

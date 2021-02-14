@@ -142,7 +142,7 @@
     }
 
 </style>
-<body onload="retrieveUsers()">
+<body onload="retrieveUsers(false, null)">
 <p class="title">User Management</p>
 <hr class="divider">
 <div id="formButtonsDiv">
@@ -151,6 +151,9 @@
 </button>
 <button id="viewUploadForm" class="utility" onclick="toggleFileUploadForm()">
     Upload Student Roster from REX
+</button>
+<button id="emailNewStudents" class="utility" onclick="emailNewStudents()">
+    Email Newly Added Students
 </button><br>
 <form method="post" action="javascript:validateForm()" id="newuser_form">
     <label for="user_first_name" id="addUserTop">
@@ -219,11 +222,18 @@
 </body>
 
 <script>
-    function retrieveUsers() {
+    function retrieveUsers(showMessage, ajaxResponse) {
         let ajaxQuery = new XMLHttpRequest();
         ajaxQuery.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 document.getElementById("table_div").innerHTML = this.responseText;
+                if(showMessage) {
+                    if(ajaxResponse.substr(0, 7) === "SUCCESS") {
+                        document.getElementById('messageFeedback').style.color = "#3f9b42"
+                    }
+                    document.getElementById('messageFeedback').innerText = ajaxResponse;
+                    document.getElementById('messageFeedback').style.display = 'block';
+                }
             }
         };
         ajaxQuery.open("POST", "retrieve_users.php", true);
@@ -257,7 +267,7 @@
                 studentFileMessage.style.display = 'block';
             } else {
                 studentFileMessage.innerText = "Uploading " + rexOutput['name'] + "...";
-                studentFileMessage.style.color = "#0073ca"
+                studentFileMessage.style.color = "#0073ca";
                 studentFileMessage.style.display = 'block';
 
                 let ajaxQuery = new XMLHttpRequest();
@@ -265,11 +275,7 @@
                 studentData.append("students_file", rexOutput);
                 ajaxQuery.onreadystatechange = function () {
                     if (this.readyState === 4 && this.status === 200) {
-                        if(this.responseText.substr(0, 7) === "SUCCESS") {
-                            studentFileMessage.style.color = "#3f9b42"
-                        }
-                        studentFileMessage.innerText = this.responseText;
-                        retrieveUsers();
+                        retrieveUsers(true, this.responseText);
                     }
                 };
                 ajaxQuery.open("POST", "upload_students.php", true);
@@ -350,16 +356,6 @@
             let ajaxQuery = new XMLHttpRequest();
             ajaxQuery.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
-                    let prefix = this.responseText;
-                    prefix = prefix.substring(0, 5);
-                    let newUserMessage = document.getElementById('newUserMessage');
-                    if(prefix !== "ERROR") {
-                        newUserMessage.style.color = "#3f9b42";
-
-                    }
-                    newUserMessage.innerText = this.responseText;
-                    newUserMessage.style.display = 'block';
-
                     document.getElementById("user_first_name").value = "";
                     document.getElementById("user_last_name").value = "";
                     document.getElementById("user_campus_id").value = "";
@@ -368,7 +364,7 @@
                     document.getElementById('studentRadio').checked = false;
                     document.getElementById('taRadio').checked = false;
                     document.getElementById('instructorRadio').checked = false;
-                    retrieveUsers();
+                    retrieveUsers(true, this.responseText);
                 }
             };
             ajaxQuery.open("POST", "add_single_user.php", true);
@@ -392,17 +388,7 @@
             let ajaxQuery = new XMLHttpRequest();
             ajaxQuery.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
-                    let messageFeedback = document.getElementById('messageFeedback');
-                    let prefix = this.responseText;
-                    prefix = prefix.substring(0, 5);
-                    if(prefix === "ERROR") {
-                        messageFeedback.style.color = "#ff0000";
-                    } else {
-                        messageFeedback.style.color = "#3f9b42";
-                    }
-                    messageFeedback.innerText = this.responseText;
-                    messageFeedback.style.display = 'block';
-                    retrieveUsers();
+                    retrieveUsers(true, this.responseText);
                 }
             };
             ajaxQuery.open("POST", "delete_user.php", true);
@@ -563,5 +549,26 @@
             rowList[rowCounter].style.display = '';
         }
 
+    }
+
+    function emailNewStudents() {
+        document.getElementById("messageFeedback").style.display = 'block';
+        document.getElementById("messageFeedback").innerText = "Emailing newly enrolled students...";
+        document.getElementById("messageFeedback").style.color = "#0073ca";
+
+            let ajaxQuery = new XMLHttpRequest();
+            ajaxQuery.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    document.getElementById("messageFeedback").innerText = this.responseText;
+                    if(this.responseText.substring(0, 5) !== "ERROR") {
+                        document.getElementById("messageFeedback").style.color = "#3f9b42";
+                    } else {
+                        document.getElementById("messageFeedback").style.color = "red";
+                    }
+                }
+            };
+            ajaxQuery.open("POST", "email_new_students.php", true);
+            ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            ajaxQuery.send();
     }
 </script>
