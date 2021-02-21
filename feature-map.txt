@@ -1,0 +1,20 @@
+- Add feature that emails TAs when a student's extension is done and they can start grading
+- Remake the email GUI on the user management page - allow option to email specific students and not all new ones
+- Add ability to configure late policy for a course
+- Add way to determine how late a assignment was submitted (if the late policy allows for it)
+- Add ability for students to "self-grant" 'n' extensions before they have to request an extension from the instructors
+- Add feature that emails instructors whenever something fishy happens (suspicious activity with auth keys or what not)
+- Make an option to toggle visibility of assignment to students
+- Make stringent requirements so that the rubric can't be completed unless the points total up nicely
+- Decorate the home screen with something (announcements, assignments, logo?)
+- Incorporate the nav bar into the assignment and user management pages
+- Revamp the file upload for student rosters - show progress with AJAX, as well as show errors for specific students in a good way
+- Allow assignments/parts to have tildes in them.. and maybe underscores?
+- Get an account on that UMBC docker server so we can get testing up and running
+- Add a linux command line boot camp (or keep it as a lab?) - maybe make another boot camp for basic programming skills?
+- Add ability for TA/instructor to be in charge of two different sections
+- Change how TA/Instructor rubrics are handled/displayed (like what happens if the TA clicks "view grades")
+
+
+- Clean up codebase
+- Do a security review
