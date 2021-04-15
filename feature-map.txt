@@ -14,6 +14,7 @@
 - Add a linux command line boot camp (or keep it as a lab?) - maybe make another boot camp for basic programming skills?
 - Add ability for TA/instructor to be in charge of two different sections
 - Change how TA/Instructor rubrics are handled/displayed (like what happens if the TA clicks "view grades")
+- Add way to separate major/nonmajor sections
 
 
 - Clean up codebase
