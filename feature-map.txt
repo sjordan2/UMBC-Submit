@@ -15,6 +15,7 @@
 - Add ability for TA/instructor to be in charge of two different sections
 - Change how TA/Instructor rubrics are handled/displayed (like what happens if the TA clicks "view grades")
 - Add way to separate major/nonmajor sections
+- Make our own MOSS?
 
 
 - Clean up codebase
