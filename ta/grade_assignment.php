@@ -36,7 +36,7 @@ $assignment = str_replace("~", " ", $_GET['assignment']);
 
     <html lang="en">
     <style>
-        body {background-color: #F1C04B}
+        body {background-color: #ABABAB}
 
         ul {
             list-style-type: none;

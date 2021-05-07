@@ -49,7 +49,7 @@ if(getEnrollment(phpCAS::getUser(), $conn) === false) {
 
 <html lang="en">
 <style>
-    body {background-color: #F1C04B}
+    body {background-color: #ABABAB}
 
     ul {
         list-style-type: none;
@@ -126,6 +126,22 @@ if(getEnrollment(phpCAS::getUser(), $conn) === false) {
 
     .active:hover {
         background-color: #555;
+    }
+
+    button.test_button {
+        text-align: center;
+        color: #0d6b0d;
+        background-color: #ffffff;
+        padding: 5px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        border: solid 2px;
+    }
+
+    button.test_button:hover {
+        background-color: #0d6b0d;
+        color: white;
+        border: solid 2px;
     }
 
 </style>
@@ -238,6 +254,26 @@ if(getEnrollment(phpCAS::getUser(), $conn) === false) {
         loadPartFiles(assignmentName, partName, student_id, select.value);
     }
 
+    function testShownSubmission(student_id) {
+        document.getElementById("testing_button").style.display = "none";
+        document.getElementById("testResponse").innerHTML = "Please wait while we run your code...";
+        document.getElementById("testResponse").style.display = "block";
+        let submissionNumber = document.getElementById("selectSubmission").value;
+        let ajaxQuery = new XMLHttpRequest();
+        let url = new URL(window.location.href);
+        let assignmentName = decode_html(url.searchParams.get("assignment").replace(new RegExp('~', 'g'), " "));
+        let partName = decode_html(url.searchParams.get("part").replace(new RegExp('~', 'g'), " "));
+        ajaxQuery.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                console.log(this.responseText);
+                document.getElementById("testResponse").innerHTML = this.responseText;
+            }
+        };
+        ajaxQuery.open("POST", "test_student_submission.php", true);
+        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajaxQuery.send("assignment=" + assignmentName + "&part=" + partName + "&campus_id=" + student_id + "&submission_number=" + submissionNumber + "&alpha_num_key=" + document.getElementById("alpha_num_key").innerText);
+    }
+
 </script>
 <?php
 $currUser = phpCAS::getUser();
@@ -342,5 +378,10 @@ echo "</div>";
 echo "<br>";
 echo "<div id='submissionsView' style='padding: 2px;width: 99%;border: 2px solid black;height: 75%'>";
 echo "<p style='font-size: x-large;text-align: center'></p>";
+echo "</div>";
+echo "<div id='testingView' style='padding: 2px;width: 99%;border: 2px solid black;margin-top: 2px;text-align: center'>";
+echo "<p style='font-size: x-large;text-align: center'>Test your code on the Docker Server! (takes ~15 seconds)</p>";
+echo "<button class='test_button' id='testing_button' onclick='testShownSubmission(\"$currUser\")'>Test Your Code!</button>";
+echo "<p id='testResponse' style='font-size: large;text-align: center;display: none'></p>";
 echo "</div>";
 ?>

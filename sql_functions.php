@@ -252,6 +252,34 @@ function ensureRubricsTableCreation($conn) {
     }
 }
 
+function ensureTestingTableCreation($conn) {
+    $sql = "SHOW TABLES LIKE 'Testing';";
+    $result = $conn->query($sql);
+    if($result->num_rows == 0) {
+        $newtable_sql = "CREATE TABLE Testing (
+                        id_number INT PRIMARY KEY AUTO_INCREMENT,
+                        assignment VARCHAR(30) NOT NULL,
+                        CONSTRAINT assignment_for_test
+                        FOREIGN KEY (assignment) 
+                            REFERENCES Assignments (assignment_name)
+                            ON DELETE CASCADE 
+                            ON UPDATE CASCADE,
+                        part VARCHAR(30) NOT NULL,
+                        CONSTRAINT part_for_test
+                        FOREIGN KEY (part)
+                            REFERENCES SubmissionParts (part_name)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE,
+                        file_type VARCHAR(20) NOT NULL,
+                        file_name VARCHAR(30) NOT NULL,
+                        file_contents LONGTEXT NOT NULL
+                        )";
+        if ($conn->query($newtable_sql) !== TRUE) {
+            echo "ERROR: " . $conn->error;
+        }
+    }
+}
+
 function getStudentDueDateForAssignment($campus_id, $assignment, $conn): ?DateTime {
     $assignment_name_sql = $conn->real_escape_string($assignment);
     // First, check if they have any extensions for the given assignment

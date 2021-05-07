@@ -25,7 +25,7 @@ if (isset($_REQUEST['logout'])) {
 
 <html lang="en">
 <style>
-    body {background-color: #F1C04B}
+    body {background-color: #ABABAB}
 
     ul {
         list-style-type: none;

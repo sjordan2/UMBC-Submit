@@ -1,3 +1,36 @@
+<?php
+require_once '../sql_functions.php';
+require_once '../config.php';
+require_once $php_nested_cas_path . 'CAS.php';
+phpCAS::setDebug();
+phpCAS::setVerbose(true);
+phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_context);
+phpCAS::setNoCasServerValidation(); // FIX THIS BUCKO
+phpCAS::forceAuthentication();
+
+$conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (isset($_REQUEST['logout'])) {
+    header('Location: https://www.csee.umbc.edu');
+//    phpCAS::logout();
+}
+
+if(getEnrollment(phpCAS::getUser(), $conn) === false) {
+    header('Location: ../home.php');
+    exit();
+}
+
+if(getEnrollment(phpCAS::getUser(), $conn) !== "Instructor") {
+    header('Location: ../home.php');
+    exit();
+}
+?>
+
 <style>
     table {
         margin-top: 10px;
@@ -80,7 +113,7 @@
         display: none;
     }
     body {
-        background-color: #F1C04B;
+        background-color: #ABABAB;
     }
     hr.divider {
         border-top: 2px solid black;

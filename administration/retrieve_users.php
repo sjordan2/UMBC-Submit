@@ -17,6 +17,7 @@ ensureSubmissionPartsTableCreation($conn);
 ensureSubmissionsTableCreation($conn);
 ensureRubricPartsTableCreation($conn);
 ensureRubricsTableCreation($conn);
+ensureTestingTableCreation($conn);
 
 $sql_list = "SELECT umbc_id, lastname, firstname, umbc_name_id, section, role, status FROM Users";
 $result_list = $conn->query($sql_list);

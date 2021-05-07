@@ -1,6 +1,54 @@
+<?php
+require_once '../sql_functions.php';
+require_once '../config.php';
+require_once $php_nested_cas_path . 'CAS.php';
+phpCAS::setDebug();
+phpCAS::setVerbose(true);
+phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_context);
+phpCAS::setNoCasServerValidation(); // FIX THIS BUCKO
+phpCAS::forceAuthentication();
+
+$conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (isset($_REQUEST['logout'])) {
+    header('Location: https://www.csee.umbc.edu');
+//    phpCAS::logout();
+}
+
+if(getEnrollment(phpCAS::getUser(), $conn) === false) {
+    header('Location: ../home.php');
+    exit();
+}
+
+if(getEnrollment(phpCAS::getUser(), $conn) !== "Instructor") {
+    header('Location: ../home.php');
+    exit();
+}
+?>
+
 <style>
     table {
         margin-top: 10px;
+    }
+    input.submitClass {
+        background-color: white;
+        color: #5e00ca;
+        display: inline-block;
+        padding: 5px 15px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        border: 2px solid;
+        text-align: center;
+        align-content: center;
+    }
+    input.submitClass:hover {
+        background-color: #5e00ca;
+        color: white;
     }
     button.utility {
         background-color: white;
@@ -108,7 +156,8 @@
         margin-top: 0px;
     }
     body {
-        background-color: #F1C04B;
+        background-color: #ABABAB;
+        max-width: 100%;
     }
     #searchAssignments {
         position: absolute;
@@ -126,6 +175,14 @@
         border: thin solid black;
         margin-top: 5px;
         margin-bottom: 10px;
+    }
+    #makefile_upload {
+        display: block;
+        margin-top: 5px;
+    }
+    #sample_input_upload {
+        display: block;
+        margin-top: 5px;
     }
     p.errorMessage {
         display: none;
@@ -887,6 +944,26 @@
         ajaxQuery.send("assignmentName=" + assignment_tilde.replace(new RegExp('~', 'g'), " "));
     }
 
+    function updatePartSelection(select_element) {
+        getSubmissionFiles(select_element);
+        getSampleTestingFiles(select_element);
+    }
+
+    function getSampleTestingFiles(select_element) {
+        let assignment_tilde = select_element.id.split("_")[1];
+        let selected_part = select_element.value;
+        let testFilesDiv = document.getElementById("sampleTestingDiv_" + assignment_tilde);
+        let ajaxQuery = new XMLHttpRequest();
+        ajaxQuery.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                testFilesDiv.innerHTML = this.responseText;
+            }
+        };
+        ajaxQuery.open("POST", "get_testing_files.php", true);
+        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajaxQuery.send("assignmentName=" + assignment_tilde.replace(new RegExp('~', 'g'), " ") + "&partName=" + selected_part + "&method=SAMPLE");
+    }
+
     function getSubmissionFiles(select_element) {
         let assignment_tilde = select_element.id.split("_")[1];
         let selected_part = select_element.value;
@@ -1208,7 +1285,6 @@
         let ajaxQuery = new XMLHttpRequest();
         ajaxQuery.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
-                // console.log(this.responseText);
                 if(this.responseText.substring(0, 5) !== "ERROR") {
                     document.getElementById("gradeRelease_" + assignment).style.color = "#3f9b42";
                 }
@@ -1237,6 +1313,138 @@
             '&#8221;': '”'
         };
         return text.replace(/\&[\w\d\#]{2,5}\;/g, function(m) { return map[m]; });
+    }
+
+    function uploadMakefile(assignment, part) {
+        let makefile = document.getElementById("makefile_file").files[0];
+        let makefileMessage = document.getElementById("makefileMessage");
+        if(makefile === undefined) {
+            makefileMessage.innerText = "You must select a file to upload!";
+            makefileMessage.style.display = 'block';
+        } else {
+            if(makefile['name'] !== "Makefile") {
+                makefileMessage.innerText = "ERROR: The file must be named 'Makefile'!";
+                makefileMessage.style.display = 'block';
+            } else {
+                makefileMessage.innerText = "Uploading " + makefile['name'] + "...";
+                makefileMessage.style.color = "#0073ca";
+                makefileMessage.style.display = 'block';
+
+                let ajaxQuery = new XMLHttpRequest();
+                let makefileData = new FormData();
+                makefileData.append("makefile", makefile);
+                makefileData.append("assignmentName", decode_html(assignment.replace(new RegExp('~', 'g'), " ")));
+                makefileData.append("partName", decode_html(part.replace(new RegExp('~', 'g'), " ")));
+                makefileData.append("type", "SAMPLE");
+                ajaxQuery.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        if(this.responseText === "Success!") {
+                            makefileMessage.style.color = "#3f9b42";
+                        } else {
+                            makefileMessage.style.color = "#ff0000";
+                        }
+                        makefileMessage.innerText = this.responseText;
+                        updatePartSelection(document.getElementById("subParts_" + decode_html(assignment.replace(new RegExp(' ', 'g'), "~"))));
+
+                    }
+                };
+                ajaxQuery.open("POST", "upload_makefile.php", true);
+                ajaxQuery.send(makefileData);
+            }
+        }
+        document.getElementById('makefile_file').value = "";
+    }
+
+    function uploadSampleInput(assignment, part) {
+        let input_file = document.getElementById("sample_input_file").files[0];
+        let sampleInputMessage = document.getElementById("sampleInputMessage");
+        if(input_file === undefined) {
+            sampleInputMessage.innerText = "You must select a file to upload!";
+            sampleInputMessage.style.display = 'block';
+        } else {
+            sampleInputMessage.innerText = "Uploading " + input_file['name'] + "...";
+            sampleInputMessage.style.color = "#0073ca";
+            sampleInputMessage.style.display = 'block';
+
+            let ajaxQuery = new XMLHttpRequest();
+            let inputFileData = new FormData();
+            inputFileData.append("input_file", input_file);
+            inputFileData.append("assignmentName", decode_html(assignment.replace(new RegExp('~', 'g'), " ")));
+            inputFileData.append("partName", decode_html(part.replace(new RegExp('~', 'g'), " ")));
+            inputFileData.append("fileName", input_file['name']);
+            inputFileData.append("type", "SAMPLE");
+            ajaxQuery.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    if(this.responseText === "Success!") {
+                        sampleInputMessage.style.color = "#3f9b42";
+                    } else {
+                        sampleInputMessage.style.color = "#ff0000";
+                    }
+                    sampleInputMessage.innerText = this.responseText;
+                    updatePartSelection(document.getElementById("subParts_" + decode_html(assignment.replace(new RegExp(' ', 'g'), "~"))));
+                }
+            };
+            ajaxQuery.open("POST", "upload_io_file.php", true);
+            ajaxQuery.send(inputFileData);
+        }
+        document.getElementById('sample_input_file').value = "";
+    }
+
+    function removeInput(button) {
+        let button_id_split = button.id.split("_");
+        let assignmentName = button_id_split[1];
+        let partName = button_id_split[2];
+        let method = button_id_split[3];
+        let row_count = button_id_split[4];
+        let fileName = document.getElementById("input_" + assignmentName + "_" + row_count).innerText;
+        if(confirm("Are you sure you want to delete " + fileName + " as an input file?")) {
+            let ajaxQuery = new XMLHttpRequest();
+            ajaxQuery.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    updatePartSelection(document.getElementById("subParts_" + decode_html(assignmentName.replace(new RegExp(' ', 'g'), "~"))));
+                }
+            };
+            ajaxQuery.open("POST", "remove_io_file.php", true);
+            ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            ajaxQuery.send("assignmentName=" + decode_html(assignmentName.replace(new RegExp('~', 'g'), " ")) + "&partName=" + decode_html(partName.replace(new RegExp('~', 'g'), " ")) + "&fileName=" + fileName + "&method=" + method);
+        }
+    }
+
+    function previewInput(button) {
+        let button_id_split = button.id.split("_");
+        let assignmentName = button_id_split[1];
+        let partName = button_id_split[2];
+        let row_count = parseInt(button_id_split[3]);
+        let fileName = document.getElementById("input_" + assignmentName + "_" + row_count).innerText;
+        let table = document.getElementById("inputTable_" + assignmentName);
+        let currRow = button.parentNode.parentNode; // Gets row object user wants to preview
+        if(currRow.rowIndex === table.rows.length - 1) { // If this is the last row in the table, then there can't be a preview, so add one
+            let previewRow = table.insertRow(currRow.rowIndex + 1);
+            let previewCell = previewRow.insertCell(0);
+            previewCell.colSpan = 2;
+            previewInputAJAX(previewCell, assignmentName, partName, fileName);
+        } else {
+            if(table.rows[currRow.rowIndex + 1].cells[0].colSpan === 2) { // If there already is a preview, close it
+                table.deleteRow(currRow.rowIndex + 1);
+            } else { // Otherwise, add preview
+                let previewRow = table.insertRow(currRow.rowIndex + 1);
+                let previewCell = previewRow.insertCell(0);
+                previewCell.colSpan = 2;
+                previewInputAJAX(previewCell, assignmentName, partName, fileName);
+            }
+        }
+    }
+
+    function previewInputAJAX(previewCell, assignmentName, partName, fileName) {
+        let ajaxQuery = new XMLHttpRequest();
+        ajaxQuery.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                previewCell.innerHTML = this.responseText;
+            }
+        };
+        ajaxQuery.open("POST", "fetch_io_file.php", true);
+        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        ajaxQuery.send("assignmentName=" + decode_html(assignmentName.replace(new RegExp('~', 'g'), " ")) + "&partName=" + decode_html(partName.replace(new RegExp('~', 'g'), " ")) + "&fileName=" + fileName);
     }
 
 </script>

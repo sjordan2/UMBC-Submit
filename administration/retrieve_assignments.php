@@ -17,6 +17,7 @@ ensureSubmissionPartsTableCreation($conn);
 ensureSubmissionsTableCreation($conn);
 ensureRubricPartsTableCreation($conn);
 ensureRubricsTableCreation($conn);
+ensureTestingTableCreation($conn);
 
 $sql_list = "SELECT assignment_name, max_points, extra_credit, date_assigned, date_due FROM Assignments";
 $result_list = $conn->query($sql_list);

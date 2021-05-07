@@ -25,7 +25,6 @@ echo "<button id=$link_button style='margin-left: 5px' class='edit_button' oncli
 echo "<p style='font-size: x-large;margin-top: 0px;display: inline'>Configure Submission Parts and Files</p><br>";
 
 $assignment_part_list = "SELECT DISTINCT part_name, point_value FROM SubmissionParts WHERE assignment = '$assignment_name_sql'";
-// Figure out if this SQL query is actually what we want...
 $part_list = $conn->query($assignment_part_list);
 $div_left = "subPartsDiv_" . htmlspecialchars(str_replace(" ", "~", $assignment_name), ENT_QUOTES);
 echo "<div id=$div_left style='display: inline-block;border: 1px solid black;padding: 5px;margin: 5px'>";
@@ -39,7 +38,7 @@ echo "<input type='number' id=$create_part_value placeholder='Point Value' style
 echo "<button class='edit_button' id='$create_part_id' onclick='addNewSubmissionPart(this)' style='margin-left: 5px'>Add New Part</button><br>";
 $select_id = "subParts_" . htmlspecialchars(str_replace(" ", "~", $assignment_name), ENT_QUOTES);
 echo "<label for=$select_id style='display: inline-block'>Select a Part: </label><br>";
-echo "<select name=$select_id id=$select_id onchange='getSubmissionFiles(this)' style='display: inline-block; margin-right: 5px;width: 300px;font-size: medium;'>";
+echo "<select name=$select_id id=$select_id onchange='updatePartSelection(this)' style='display: inline-block; margin-right: 5px;width: 300px;font-size: medium;'>";
 echo "<option disabled selected value='Select a Part...' style='width: 200px'>Select a Part...</option>";
 while ($row = $part_list->fetch_assoc()) {
     $part_name = $row['part_name'];
@@ -53,8 +52,16 @@ echo "<button class='delete_button' id='$delete_part_id' onclick='deleteSubmissi
 echo "</div>";
 
 $div_right = "subFilesDiv_" . htmlspecialchars(str_replace(" ", "~", $assignment_name), ENT_QUOTES);
-echo "<div id=$div_right style='display: inline-block;border: 1px solid black;padding: 5px'>";
+echo "<div id='$div_right' style='display: inline-block;border: 1px solid black;padding: 5px'>";
 echo "<p style='margin: 5px'>You must select a submission part first!</p>";
 echo "</div>";
+
+echo "<p style='font-size: x-large;margin-top: 5px;margin-bottom: 0px; display: block'>Configure Sample Testing Procedure</p><br>";
+
+$testing_div = "sampleTestingDiv_" . htmlspecialchars(str_replace(" ", "~", $assignment_name), ENT_QUOTES);
+echo "<div id='$testing_div'>";
+echo "<p style='margin: 5px'>You must select a submission part first!</p>";
+echo "</div>";
+
 
 echo "</table>";
