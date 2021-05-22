@@ -26,7 +26,7 @@ SUPER IMPORTANT - Get this transferred to a server that has docker on it so we d
 - Maybe make an edit option in the view submission page?
 - Make graph of test cases passing or failing <-- this would be very unforgiving..
 - Send students emails confirming submissions?
-- 
+- Add way for instructors to download grades in Blackboard-uploadable format
 
 - Clean up codebase (and probably redo the whole frickin thing lmao)
 - Do a security review
