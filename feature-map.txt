@@ -8,7 +8,7 @@ COMPLETED - Sean, 5/21/21 - Make an option to toggle visibility of assignment to
 - Make stringent requirements so that the rubric can't be completed unless the points total up nicely
 - Make it so that a recently created assignment can't be made visible to students unless the sample makefile, parts, etc. have all been set up
 - Decorate the home screen with something (announcements, assignments, logo, embedded course calendar, recent video lectures [embed Youtube?])
-- Incorporate the nav bar into the assignment and user management pages
+COMPLETED - Sean, 5/23/21 - Incorporate the nav bar into the assignment and user management pages
 - Revamp the file upload for student rosters - show progress with AJAX, as well as show errors for specific students in a good way
 - Allow assignments/parts to have tildes in them.. and maybe underscores?
 SUPER IMPORTANT - Get this transferred to a server that has docker on it so we don't have to SSH each time
