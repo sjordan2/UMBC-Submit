@@ -49,5 +49,6 @@ echo "<p style='margin: 5px'>You must select an assignment part first!</p>";
 echo "</div>";
 $encoded_assignment_name = htmlspecialchars(str_replace(" ", "~", $assignment_name), ENT_QUOTES);
 echo "<br><button class='utility' onclick='releaseGrading(\"$encoded_assignment_name\")' style='text-align: center;margin-top: 5px'>Release Grading</button>";
+echo "<button class='utility' onclick='downloadGrades(\"$encoded_assignment_name\")' style='text-align: center;margin-top: 5px;margin-left: 10px'>Download Grades</button>";
 $grade_release_id = "gradeRelease_" . $encoded_assignment_name;
 echo "<p class='errorMessage' id='$grade_release_id'></p>";

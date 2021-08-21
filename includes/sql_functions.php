@@ -1,32 +1,7 @@
 <?php
 
 require_once 'db_sql.php';
-function addUserToDatabase($nameID, $campusID, $firstName, $lastName, $discussion, $role, $conn, $verbose) {
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $firstName_to_insert = $conn->real_escape_string($firstName);
-    $lastName_to_insert = $conn->real_escape_string($lastName);
-
-    $alpha_num_key = getToken(64);
-
-    $newstudent_sql = "INSERT INTO Users (umbc_name_id, umbc_id, firstname, lastname, section, role, status, alpha_num_key)
-                    VALUES ('$nameID', '$campusID', '$firstName_to_insert',
-                   '$lastName_to_insert', '$discussion', '$role', 'Active', '$alpha_num_key')";
-    if ($conn->query($newstudent_sql) === TRUE) {
-        $success_message = "SUCCESS: " . $firstName . " " . $lastName
-            . " (" . $nameID . ") has been added to the database!";
-        if($verbose === true) {
-            echo $success_message;
-        }
-    } else {
-        $error_message = "ERROR: " . $conn->error;
-        echo $error_message;
-    }
-}
 function getFullNameFromCampusID($campusID, $conn): string {
     $campusID_sql = "SELECT lastname, firstname FROM Users WHERE umbc_id = '$campusID'";
     $result = $conn->query($campusID_sql);
@@ -57,7 +32,7 @@ function ensureUsersTableCreation($conn) {
                         umbc_name_id VARCHAR(30) NOT NULL,
                         firstname VARCHAR(30) NOT NULL,
                         lastname VARCHAR(30) NOT NULL,
-                        section INT NOT NULL,
+                        section INT,
                         role VARCHAR(30) NOT NULL,
                         status VARCHAR(15) NOT NULL,
                         alpha_num_key VARCHAR(70) NOT NULL,
@@ -81,8 +56,9 @@ function ensureAssignmentsTableCreation($conn) {
                         extra_credit INT NOT NULL,
                         document_link VARCHAR(150),
                         grading_due_date DATETIME NOT NULL,
-                        grades_released INT NOT NULL
-                          )";
+                        grades_released INT NOT NULL,
+                        is_visible INT NOT NULL
+                        )";
         if ($conn->query($newtable_sql) !== TRUE) {
             echo "ERROR: " . $conn->error;
         }
@@ -424,51 +400,25 @@ function ensureRubricCreation($assignment_name, $part_name, $student_id, $conn):
             if($type_to_copy === "0") { // If the row has a point value, insert it
                 $student_rubric_insertion_sql = "INSERT INTO Rubrics (assignment, part_name, student_id, line_type, line_item, point_value)
                                                  VALUES ('$assignment_sql', '$part_sql', '$student_id', '$type_to_copy', '$item_to_copy', '$value_to_copy')";
-            } else { // Otherwise, use the special SQL NULL type
-                if($type_to_copy === "2") {
-                    $student_rubric_insertion_sql = "INSERT INTO Rubrics (assignment, part_name, student_id, line_type, line_item, point_value, grader_comments)
-                                                 VALUES ('$assignment_sql', '$part_sql', '$student_id', '$type_to_copy', NULL, NULL, 'No comments provided.')";
-                } else {
-                    $student_rubric_insertion_sql = "INSERT INTO Rubrics (assignment, part_name, student_id, line_type, line_item, point_value)
-                                                     VALUES ('$assignment_sql', '$part_sql', '$student_id', '$type_to_copy', '$item_to_copy', NULL)";
-                }
+            } else { // Otherwise, it is a student comment line
+                $student_rubric_insertion_sql = "INSERT INTO Rubrics (assignment, part_name, student_id, line_type, line_item, point_value)
+                                                 VALUES ('$assignment_sql', '$part_sql', '$student_id', '$type_to_copy', '$item_to_copy', NULL)";
             }
             $rubric_insertion_result = $conn->query($student_rubric_insertion_sql);
             if($rubric_insertion_result === false) {
                 $status_okay = false;
             }
         }
+        // Insert grading comment box
+        $grading_comment_insertion_sql = "INSERT INTO Rubrics (assignment, part_name, student_id, line_type, line_item, point_value, grader_comments)
+                                                 VALUES ('$assignment_sql', '$part_sql', '$student_id', '2', NULL, NULL, 'No comments provided.')";
+        $grading_comment_result = $conn->query($grading_comment_insertion_sql);
+        if($grading_comment_result === false) {
+            $status_okay = false;
+        }
     }
     // A return value of "True" means that after this function, a full rubric exists. The only way it returns false is if an error occurred with the SQL query.
     return $status_okay;
-}
-
-function crypto_rand_secure($min, $max) : int {
-    $range = $max - $min;
-    if ($range < 1) return $min; // not so random...
-    $log = ceil(log($range, 2));
-    $bytes = (int) ($log / 8) + 1; // length in bytes
-    $bits = (int) $log + 1; // length in bits
-    $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
-    do {
-        $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
-        $rnd = $rnd & $filter; // discard irrelevant bits
-    } while ($rnd > $range);
-    return $min + $rnd;
-}
-
-function getToken($length) : string {
-    $token = "";
-    $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
-    $codeAlphabet.= "0123456789";
-    $max = strlen($codeAlphabet); // edited
-
-    for ($i=0; $i < $length; $i++) {
-        $token .= $codeAlphabet[crypto_rand_secure(0, $max-1)];
-    }
-
-    return $token;
 }
 
 function getAlphaNumKey($campus_id, $conn) : string {

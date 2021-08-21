@@ -1,607 +1,352 @@
 <?php
-require_once '../sql_functions.php';
-require_once '../config.php';
-require_once $php_nested_cas_path . 'CAS.php';
-phpCAS::setDebug();
-phpCAS::setVerbose(true);
-phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_context);
-phpCAS::setNoCasServerValidation(); // FIX THIS BUCKO
-phpCAS::forceAuthentication();
+require_once 'user_functions.php';
+require_once '../includes/db_sql.php';
+require_once '../includes/sql_functions.php';
 
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (isset($_REQUEST['logout'])) {
-    header('Location: https://www.csee.umbc.edu');
-//    phpCAS::logout();
-}
-
-if(getEnrollment(phpCAS::getUser(), $conn) === false) {
-    header('Location: ../home.php');
-    exit();
-}
-
-if(getEnrollment(phpCAS::getUser(), $conn) !== "Instructor") {
-    header('Location: ../home.php');
+$user_campus_id = $_SERVER["umbccampusid"];
+$role = getEnrollment($user_campus_id, $conn);
+if($role !== "Instructor" AND $user_campus_id !== $submit_system_admin) {
+    header('Location: ../');
     exit();
 }
 ?>
 
 <style>
-    table {
-        margin-top: 10px;
-    }
-    button.utility {
-        background-color: white;
-        color: #0073ca;
-        display: inline-block;
-        padding: 10px 15px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        border: 2px solid;
-        align-content: center;
-    }
-    button.utility:hover {
-        background-color: #0073ca;
-        color: white;
-    }
-    button.delete_button {
-        text-align: center;
-        color: #ff0000;
-        background-color: #ffffff;
-        padding: 5px;
-        cursor: pointer;
-        border: solid 2px;
-    }
-    button.delete_button:hover {
-        background-color: #ff0000;
-        color: white;
-        border: solid 2px;
-    }
-    button.edit_button {
-        text-align: center;
-        color: #0d6b0d;
-        background-color: #ffffff;
-        padding: 5px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        border: solid 2px;
-    }
-    button.edit_button:hover {
-        background-color: #0d6b0d;
-        color: white;
-        border: solid 2px;
-    }
-    button.save_button {
-        text-align: center;
-        horiz-align: center;
-        color: #1644b7;
-        margin-bottom: 5px;
-        background-color: #ffffff;
-        padding: 5px;
-        cursor: pointer;
-        border: solid 2px;
-    }
-    button.save_button:hover {
-        background-color: #1644b7;
-        color: white;
-        border: solid 2px;
-    }
-    table {
-        table-layout: fixed;
-    }
-    table,th,td,tr {
-        border : 2px solid black;
-        border-collapse: collapse;
-        width: 100%;
-    }
-    th, td {
-        padding: 5px;
-        text-align: center;
-        vertical-align: middle;
-        overflow: auto;
-        font-size: 20px;
-    }
-    h {
-        font-size: 30px
-    }
-    p.errorMessage {
-        display: none;
-    }
-    body {
-        background-color: #ABABAB;
-    }
-    hr.divider {
-        border-top: 2px solid black;
-    }
-    p.title {
-        font-size: xxx-large;
-        text-align: center;
-        margin-bottom: 5px;
-        margin-top: 0px;
-    }
-    #searchUsers {
+    #newUserOverLay, #editUserOverlay, #fileUploadOverlay {
         position: absolute;
-        margin-left: 20px;
-        width: 40%;
-        height: 35px;
-        font-size: 20px;
-        right: 0.5%;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 999;
     }
-    tr:hover {
-        background-color: #858585;
-    }
-    form {
-        display: none;
-        border: thin solid black;
-        margin-top: 5px;
-        margin-bottom: 10px;
-    }
-    p.errorMessage {
-        display: none;
-        color: red;
-        margin: 0;
-    }
-    #formButtonsDiv {
-        text-align: center;
-    }
-    input.submitClass {
+    #newUserBox, #editUserBox, #fileUploadBox {
         background-color: white;
+        max-height: 83vh;
+    }
+    #newUser_finalButton, #editUser_finalButton {
         color: #5e00ca;
-        display: inline-block;
-        padding: 5px 15px;
-        margin-bottom: 5px;
-        cursor: pointer;
-        border: 2px solid;
-        text-align: center;
-        align-content: center;
+        background-color: white;
+        border-color: #5e00ca;
     }
-    input.submitClass:hover {
-        background-color: #5e00ca;
+    #newUser_finalButton:hover, #editUser_finalButton:hover {
         color: white;
+        background-color: #5e00ca;
     }
-    #students_file {
-        text-align: center;
-        margin-top: 5px;
-        display: inline-block;
+    #courseCountDiv {
+        margin-left: 1%;
     }
-    #addUserTop {
-        margin-top: 5px;
-        display: inline-block;
+    .ajs-message {
+        min-width: 50vw !important;
     }
-
+    #editUserTitle, #editUserIDTitle {
+        display: inline;
+    }
+    #fileUploadStatusDiv {
+        background-color: #e4e7eb !important;
+    }
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    th {
+        background-color: darkgray !important;
+    }
+    @media (min-width: 410px) {
+        #searchUsers {
+            float: right;
+            margin-right: 1%;
+        }
+    }
+    @media (max-width: 410px) {
+        #searchUsers {
+            width: 100% !important;
+        }
+    }
+    #spinnerObject {
+        width: 5rem;
+        height: 5rem;
+    }
 </style>
-<body onload="retrieveUsers(false, null)">
-<p class="title">User Management</p>
-<hr class="divider">
-<div id="formButtonsDiv">
-<button id="viewNewUserForm" class="utility" onclick="toggleNewUserForm()">
-    Add New User
-</button>
-<button id="viewUploadForm" class="utility" onclick="toggleFileUploadForm()">
-    Upload Student Roster from REX
-</button>
-<button id="emailNewStudents" class="utility" onclick="emailNewStudents()">
-    Email Newly Added Students
-</button><br>
-<form method="post" action="javascript:validateForm()" id="newuser_form">
-    <label for="user_first_name" id="addUserTop">
-        User's First Name:
-    </label><br>
-    <input type="text" id="user_first_name" name="user_fname">
-    <br>
 
-    <p id='fNameFeedback' class='errorMessage'>The user's first name cannot be empty!</p>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+    <link rel='shortcut icon' type='image/x-icon' href='/favicon.png' />
+    <title>User Management</title>
+</head>
+<body>
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script type="text/javascript">
+    //override defaults
+    alertify.defaults.transition = "slide";
+    alertify.defaults.theme.ok = "btn btn-primary";
+    alertify.defaults.theme.cancel = "btn btn-danger";
+    alertify.defaults.theme.input = "form-control";
+    alertify.defaults.glossary.title = "UMBC Submit System"
+</script>
+<?php include_once "../includes/header.php";?>
+<div id='masterContainer'>
+<?php if($conn->connect_error): ?>
+    <script>
+        alertify.set('notifier','position', 'top-center');
+        alertify.set('notifier','delay', 0);
+        alertify.error('Fatal Error: Could not connect to SQL server: ' + "<?php echo $conn->connect_error?>");
+    </script>
+<?php endif; ?>
+<div class="container mt-3" id="buttonsRow">
+    <div class="row">
+        <div class="col-sm d-grid mb-3">
+            <?php if($conn->connect_error): ?>
+                <button class="btn btn-secondary" type="button" id="addNewUserButton" disabled><i class="bi bi-person-plus"></i>&nbsp&nbsp Add New User</button>
+            <?php else: ?>
+                <button class="btn btn-secondary" type="button" id="addNewUserButton"><i class="bi bi-person-plus"></i>&nbsp&nbsp Add New User</button>
+            <?php endif; ?>
+        </div>
+        <div class="col-sm d-grid mb-3">
+            <?php if($conn->connect_error): ?>
+                <button class="btn btn-secondary" type="button" id="fileUploadButton" disabled><i class="bi bi-upload"></i>&nbsp&nbsp Upload Student Roster From REX</button>
+            <?php else: ?>
+                <button class="btn btn-secondary" type="button" id="fileUploadButton"><i class="bi bi-upload"></i>&nbsp&nbsp Upload Student Roster From REX</button>
+            <?php endif; ?>
+        </div>
+        <div class="col-sm d-grid mb-3">
+            <?php
+            $email_count_query = "SELECT umbc_id FROM Users WHERE email_sent = '0'";
+            $email_count_result = $conn->query($email_count_query);
+            ?>
+            <?php if($email_count_result->num_rows === 0): ?>
+                <button class="btn btn-secondary" type="button" id="emailAllUsersButton" disabled><i class="bi bi-envelope-fill"></i>&nbsp&nbsp All Users Emailed</button>
+            <?php elseif($email_count_result->num_rows === 1): ?>
+                <button class="btn btn-secondary" type="button" id="emailAllUsersButton"><i class="bi bi-envelope-fill"></i>&nbsp&nbsp Email 1 New User</button>
+            <?php else: ?>
+                <button class="btn btn-secondary" type="button" id="emailAllUsersButton"><i class="bi bi-envelope-fill"></i>&nbsp&nbsp Email <?php echo $email_count_result->num_rows; ?> New Users</button>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<div class="align-items-center d-flex justify-content-center h-100 w-100 d-none" id="newUserOverlay">
+<div class="p-3 overflow-auto" id="newUserBox">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Add New User</h3>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-danger" id="exit_newUserOverlay">X</button>
+            </div>
+        </div>
+    </div>
+    <form id="newUserForm">
+        <div class="mb-2">
+            <label for="newUser_firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="newUser_firstName" placeholder="Enter Name Here...">
+            <div class="invalid-feedback">
+                Please enter a valid first name.
+            </div>
+        </div>
+        <div class="mb-2">
+            <label for="newUser_lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="newUser_lastName" placeholder="Enter Name Here...">
+            <div class="invalid-feedback">
+                Please enter a valid last name.
+            </div>
+        </div>
+        <div class="mb-2">
+            <label for="newUser_campusID" class="form-label">Campus ID</label>
+            <input type="text" class="form-control" id="newUser_campusID" placeholder="Enter Campus ID Here...">
+            <div class="invalid-feedback">
+                Please enter a valid Campus ID.
+            </div>
+        </div>
+        <div class="mb-2">
+            <label for="newUser_nameID" class="form-label">Name ID</label>
+            <input type="text" class="form-control" id="newUser_nameID" placeholder="Enter Name ID Here...">
+            <div class="invalid-feedback">
+                Please enter a valid Name ID.
+            </div>
+        </div>
+        <div class="mb-2">
+            <label for="newUser_discussion" class="form-label">Discussion Section</label>
+            <input type="number" class="form-control" id="newUser_discussion" placeholder="Enter Discussion Section Here..."min="1">
+            <div class="invalid-feedback">
+                Please enter a valid discussion section.
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="newUser_noDiscussionCheck">
+                <label class="form-check-label" for="newUser_noDiscussionCheck">
+                    No Discussion Section
+                </label>
+                <a id="newUser_discussionTooltip" class="d-inline-block infoHelp_tip" data-bs-toggle="tooltip" data-bs-placement="right" title="Select this option if the user does not have an assigned discussion section (e.g. there are more TAs than there are discussion sections in a particular semester)">
+                    <i class="bi bi-info-circle"></i>
+                </a>
+            </div>
+        </div>
+        <div>
+            <label class="form-label">Role</label>
+        </div>
+        <div class="btn-group justify-content-center mb-3" role="group" aria-label="Role Selection" id="newUser_roleSelectionGroup">
+            <input type="radio" class="btn-check" name="newUser_roleRadio" id="newUser_studentRadio" autocomplete="off" checked>
+            <label class="btn btn-outline-success" for="newUser_studentRadio">Student</label>
 
-    <label for="user_last_name">
-        User's Last Name:
-    </label><br>
-    <input type="text" id="user_last_name" name="user_lname">
-    <br>
+            <input type="radio" class="btn-check" name="newUser_roleRadio" id="newUser_taRadio" autocomplete="off">
+            <label class="btn btn-outline-primary" for="newUser_taRadio">Teaching Assistant</label>
 
-    <p id='lNameFeedback' class='errorMessage'>The user's last name cannot be empty!</p>
-
-    <label for="user_campus_id">
-        User's Campus ID:
-    </label><br>
-    <input type="text" id="user_campus_id" name="user_campus_id">
-    <br>
-
-    <p id='campusIdFeedback' class='errorMessage'>The user's campus ID cannot be empty!</p>
-
-    <label for="user_name_id">
-        User's Name ID:
-    </label><br>
-    <input type="text" id="user_name_id" name="user_name_id">
-    <br>
-
-    <p id='nameIdFeedback' class='errorMessage'>The user's name ID cannot be empty!</p>
-
-    <label for="user_discussion">
-        User's Discussion Section:
-    </label><br>
-    <input type="text" id="user_discussion" name="user_discussion">
-    <br>
-
-    <p id='discussionSectionFeedback' class='errorMessage'>The user's discussion section must be a positive integer!</p>
-
-    User's Role:<br>
-    <input type="radio" id="studentRadio" name="role" value="Student">
-    <label for="studentRadio">Student</label>
-    <input type="radio" id="taRadio" name="role" value="TA">
-    <label for="taRadio">TA</label>
-    <input type="radio" id="instructorRadio" name="role" value="Instructor">
-    <label for="instructorRadio">Instructor</label>
-    <br>
-
-    <p id='roleFeedback' class='errorMessage'>The user's role cannot be empty!</p>
-
-    <input class='submitClass' type="submit" value="Submit" name="submit_user">
-    <p id="newUserMessage" class=errorMessage></p>
-    <br>
-</form>
-    <form id="fileupload_form" action="javascript:submitStudentRoster()">
-        <input type="file" name="students_file" id="students_file"><br>
-        <input class='submitClass' type="submit" value="Submit" name="submit_student">
-        <p class="errorMessage" id="studentFileMessage"></p>
+            <input type="radio" class="btn-check" name="newUser_roleRadio" id="newUser_instructorRadio" autocomplete="off">
+            <label class="btn btn-outline-danger" for="newUser_instructorRadio">Instructor</label>
+        </div>
+        <div class="d-grid gap-2">
+            <button type="button" class="btn btn-outline-dark" id="newUser_finalButton">Create New User</button>
+        </div>
     </form>
 </div>
-<div id="table_div">
 </div>
+<div class="align-items-center d-flex justify-content-center h-100 w-100 d-none" id="editUserOverlay">
+    <div class="p-3 overflow-auto" id="editUserBox">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 id="editUserTitle">Edit User:&nbsp</h3><h3 id="editUserIDTitle"></h3>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-danger" id="exit_editUserOverlay">X</button>
+                </div>
+            </div>
+        </div>
+        <form id="editUserForm">
+            <div class="mb-2">
+                <label for="editUser_firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="editUser_firstName" placeholder="Enter Name Here...">
+                <div class="invalid-feedback">
+                    Please enter a valid first name.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="editUser_lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="editUser_lastName" placeholder="Enter Name Here...">
+                <div class="invalid-feedback">
+                    Please enter a valid last name.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="editUser_nameID" class="form-label">Name ID</label>
+                <input type="text" class="form-control" id="editUser_nameID" placeholder="Enter Name ID Here...">
+                <div class="invalid-feedback">
+                    Please enter a valid Name ID.
+                </div>
+            </div>
+            <div class="mb-2">
+                <label for="editUser_discussion" class="form-label">Discussion Section</label>
+                <input type="number" class="form-control" id="editUser_discussion" placeholder="Enter Discussion Section Here..." min="1">
+                <div class="invalid-feedback">
+                    Please enter a valid discussion section.
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="editUser_noDiscussionCheck">
+                    <label class="form-check-label" for="editUser_noDiscussionCheck">
+                        No Discussion Section
+                    </label>
+                    <a id="editUser_discussionTooltip" class="d-inline-block infoHelp_tip" data-bs-toggle="tooltip" data-bs-placement="right" title="Select this option if the user does not have an assigned discussion section (e.g. there are more TAs than there are discussion sections in a particular semester)">
+                        <i class="bi bi-info-circle"></i>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">Role</label>
+            </div>
+            <div class="btn-group justify-content-center mb-3" role="group" aria-label="Role Selection" id="roleSelectionGroup">
+                <input type="radio" class="btn-check" name="editUser_roleRadio" id="editUser_studentRadio" autocomplete="off">
+                <label class="btn btn-outline-success" for="editUser_studentRadio">Student</label>
+
+                <input type="radio" class="btn-check" name="editUser_roleRadio" id="editUser_taRadio" autocomplete="off">
+                <label class="btn btn-outline-primary" for="editUser_taRadio">Teaching Assistant</label>
+
+                <input type="radio" class="btn-check" name="editUser_roleRadio" id="editUser_instructorRadio" autocomplete="off">
+                <label class="btn btn-outline-danger" for="editUser_instructorRadio">Instructor</label>
+            </div>
+            <div>
+                <label class="form-label">Status</label>
+            </div>
+            <div class="btn-group justify-content-center mb-3 d-flex" role="group" id="statusUpdateGroup">
+                <input type="radio" class="btn-check" name="statusUpdate" id="statusUpdate_Active" autocomplete="off">
+                <label class="btn btn-outline-success" for="statusUpdate_Active">Active</label>
+
+                <input type="radio" class="btn-check" name="statusUpdate" id="statusUpdate_Dropped" autocomplete="off">
+                <label class="btn btn-outline-danger" for="statusUpdate_Dropped">Dropped</label>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="button" class="btn btn-outline-dark" id="editUser_finalButton">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="align-items-center d-flex justify-content-center h-100 w-100 d-none" id="fileUploadOverlay">
+    <div class="p-3 overflow-auto" id="fileUploadBox">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="d-inline-block">Upload Roster File</h3>
+                    <a id="fileUpload_Tooltip" class="d-inline-block infoHelp_tip" data-bs-toggle="tooltip" data-bs-placement="top" title="The only data columns needed for this file upload are: 'StudentLastName', 'StudentFirstName', 'StudentCampusID', 'StudentMyUMBCId', and 'ClassNumberClassSectionSourceKey'. Any other student information is discarded and not used.">
+                        <i class="bi bi-info-circle"></i>
+                    </a>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-danger" id="exit_fileUploadOverlay">X</button>
+                </div>
+            </div>
+        </div>
+        <form id="fileUploadForm">
+            <div class="mb-3 mt-3">
+                <input class="form-control" type="file" id="rexFile">
+            </div>
+            <div id='fileUploadStatusDiv' class="mb-3 bg-light input-group">
+                <span class="input-group-text align-items-center bg-secondary w-100" id="fileUploadSymbolBackground"><i id='fileUploadStatusSymbol' class="bi bi-info-circle text-white"></i></span>
+                <p id='fileUploadStatusText' class="mt-3 ms-3">No file selected yet!</p>
+            </div>
+            <div id="submitFileDiv" class="mb-3">
+                <button type="button" class="btn btn-outline-success w-100" id="fileUpload_submit" disabled>Submit File</button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php
+$user_result = null;
+if($conn->connect_error === null) { // If the connection was successful
+    $user_list_sql = "SELECT umbc_id, umbc_name_id, firstname, lastname, section, role, status FROM Users";
+    $user_result = $conn->query($user_list_sql);
+}
+?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<div id="totalUsersDiv">
+<div id="courseCountDiv" class="w-100">
+    <?php if($conn->connect_error === null): ?> <!-- If the connection was successful -->
+        <h3 id="userCount" class="d-inline">Total Users: <?php echo $user_result->num_rows; ?></h3>
+    <?php else: ?>
+        <h3 id="userCount" class="d-inline">Total Users: 0</h3>
+    <?php endif; ?>
+    <label for="searchUsers"></label><input type="text" id="searchUsers" placeholder="Enter search term here..." class="w-50">
+</div>
+<div id="studentListDiv">
+    <div class="d-flex justify-content-center d-block mt-4" id="spinnerDiv">
+        <div class="spinner-border" role="status" id="spinnerObject">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <table id="usersTable" data-search="true" data-search-selector="#searchUsers" data-pagination="true" data-page-size="25">
+    </table>
+</div>
+</div>
+</div>
+<script type="text/javascript" src="/javascript/user_management.js" charset="utf-8"></script>
 </body>
-
-<script>
-    function retrieveUsers(showMessage, ajaxResponse) {
-        let ajaxQuery = new XMLHttpRequest();
-        ajaxQuery.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                document.getElementById("table_div").innerHTML = this.responseText;
-                if(showMessage) {
-                    if(ajaxResponse.substr(0, 7) === "SUCCESS") {
-                        document.getElementById('messageFeedback').style.color = "#3f9b42"
-                    }
-                    document.getElementById('messageFeedback').innerText = ajaxResponse;
-                    document.getElementById('messageFeedback').style.display = 'block';
-                }
-            }
-        };
-        ajaxQuery.open("POST", "retrieve_users.php", true);
-        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        ajaxQuery.send();
-    }
-
-    function toggleNewUserForm() {
-        if(document.getElementById("fileupload_form").style.display === 'block') {
-            document.getElementById("fileupload_form").style.display = 'none';
-            document.getElementById("newuser_form").style.display = 'block';
-        } else {
-            if(document.getElementById("newuser_form").style.display === 'block') {
-                document.getElementById("newuser_form").style.display = 'none';
-            } else {
-                document.getElementById("newuser_form").style.display = 'block';
-            }
-        }
-    }
-
-    function submitStudentRoster() {
-
-        let rexOutput = document.getElementById("students_file").files[0];
-        let studentFileMessage = document.getElementById("studentFileMessage");
-        if(rexOutput === undefined) {
-            studentFileMessage.innerText = "You must select a file to upload!";
-            studentFileMessage.style.display = 'block';
-        } else {
-            if(rexOutput['name'].split(".")[1] !== "csv") {
-                studentFileMessage.innerText = "ERROR: The file must be in CSV format!";
-                studentFileMessage.style.display = 'block';
-            } else {
-                studentFileMessage.innerText = "Uploading " + rexOutput['name'] + "...";
-                studentFileMessage.style.color = "#0073ca";
-                studentFileMessage.style.display = 'block';
-
-                let ajaxQuery = new XMLHttpRequest();
-                let studentData = new FormData();
-                studentData.append("students_file", rexOutput);
-                ajaxQuery.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) {
-                        retrieveUsers(true, this.responseText);
-                    }
-                };
-                ajaxQuery.open("POST", "upload_students.php", true);
-                ajaxQuery.send(studentData);
-            }
-        }
-        document.getElementById('students_file').value = "";
-    }
-
-    function toggleFileUploadForm() {
-        if(document.getElementById("newuser_form").style.display === 'block') {
-            document.getElementById("newuser_form").style.display = 'none';
-            document.getElementById("fileupload_form").style.display = 'block';
-        } else {
-            if(document.getElementById("fileupload_form").style.display === 'block') {
-                document.getElementById("fileupload_form").style.display = 'none';
-            } else {
-                document.getElementById("fileupload_form").style.display = 'block';
-            }
-        }
-    }
-
-    function validateForm() {
-        resetFormMessages();
-
-        let isGoodForm = true;
-
-        let userFirstName = document.getElementById("user_first_name").value;
-        if(userFirstName === "") {
-            document.getElementById("fNameFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-
-        let userLastName = document.getElementById("user_last_name").value;
-        if(userLastName === "") {
-            document.getElementById("lNameFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-
-        let userCampusId = document.getElementById("user_campus_id").value;
-        if(userCampusId === "") {
-            document.getElementById("campusIdFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-
-        let userNameId = document.getElementById("user_name_id").value;
-        if(userNameId === "") {
-            document.getElementById("nameIdFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-
-        if (!document.getElementById('studentRadio').checked &&
-            !document.getElementById('taRadio').checked &&
-            !document.getElementById('instructorRadio').checked) {
-            document.getElementById("roleFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-        let userRole;
-        if (document.getElementById('studentRadio').checked) {
-            userRole = "Student";
-        } else if(document.getElementById('taRadio').checked) {
-            userRole = "TA";
-        } else {
-            userRole = "Instructor";
-        }
-
-        let userDiscussion = document.getElementById("user_discussion").value;
-        if(userDiscussion === "" || !Number.isInteger(Number(userDiscussion))) {
-            document.getElementById("discussionSectionFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-        // It is an integer.. we must make sure it is positive
-        if(Number(userDiscussion) <= 0) {
-            document.getElementById("discussionSectionFeedback").style.display = 'block';
-            isGoodForm = false;
-        }
-        if(isGoodForm === true) {
-            let ajaxQuery = new XMLHttpRequest();
-            ajaxQuery.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    document.getElementById("user_first_name").value = "";
-                    document.getElementById("user_last_name").value = "";
-                    document.getElementById("user_campus_id").value = "";
-                    document.getElementById("user_name_id").value = "";
-                    document.getElementById("user_discussion").value = "";
-                    document.getElementById('studentRadio').checked = false;
-                    document.getElementById('taRadio').checked = false;
-                    document.getElementById('instructorRadio').checked = false;
-                    retrieveUsers(true, this.responseText);
-                }
-            };
-            ajaxQuery.open("POST", "add_single_user.php", true);
-            ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            ajaxQuery.send("fname=" + userFirstName + "&lname=" + userLastName + "&cID=" + userCampusId
-                + "&nID=" + userNameId + "&disc=" + userDiscussion + "&role=" + userRole);
-        }
-    }
-    function resetFormMessages() {
-        document.getElementById("fNameFeedback").style.display = 'none';
-        document.getElementById("lNameFeedback").style.display = 'none';
-        document.getElementById("campusIdFeedback").style.display = 'none';
-        document.getElementById("nameIdFeedback").style.display = 'none';
-        document.getElementById("discussionSectionFeedback").style.display = 'none';
-        document.getElementById("roleFeedback").style.display = "none";
-    }
-
-    function deleteUser(button) {
-        let user_campus_id = button.id.split("_")[1]; // Gets UMBC Campus Id of User
-        if(confirm("Are you sure you want to delete this user (" + user_campus_id + ")?")) {
-            let ajaxQuery = new XMLHttpRequest();
-            ajaxQuery.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    retrieveUsers(true, this.responseText);
-                }
-            };
-            ajaxQuery.open("POST", "delete_user.php", true);
-            ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            ajaxQuery.send("user_id=" + user_campus_id);
-        }
-    }
-    function editUser(button) {
-        button.className = "save_button";
-        button.innerText = "Save Changes";
-        button.onclick = function () {updateEditedUser(button)};
-        let user_campus_id = button.id.split("_")[1]; // Gets UMBC Campus Id of User
-        let inputAttributeList = ["lastname_", "firstname_", "umbc_name_id_", "section_"];
-        for (let counter = 0; counter < inputAttributeList.length; counter++) {
-            let oldText = document.getElementById(inputAttributeList[counter] + user_campus_id + "_element");
-            let newText = document.createElement("input");
-            newText.setAttribute("value", oldText.innerText);
-            newText.style.fontSize = "20px";
-            newText.style.textAlign = 'center';
-            newText.style.width = oldText.offsetWidth.toString();
-            newText.id = inputAttributeList[counter] + user_campus_id + "_element";
-            oldText.replaceWith(newText);
-        }
-        let oldRole = document.getElementById("role_" + user_campus_id + "_element");
-        let newRole = document.createElement("select");
-
-        let instructorOption = document.createElement("option");
-        instructorOption.text = "Instructor";
-        let taOption = document.createElement("option");
-        taOption.text = "TA";
-        let studentOption = document.createElement("option");
-        studentOption.text = "Student";
-
-        if(oldRole.innerText === "Instructor") {
-            newRole.add(instructorOption);
-            newRole.add(taOption);
-            newRole.add(studentOption);
-        } else if(oldRole.innerText === "TA") {
-            newRole.add(taOption);
-            newRole.add(studentOption);
-            newRole.add(instructorOption);
-        } else {
-            newRole.add(studentOption);
-            newRole.add(taOption);
-            newRole.add(instructorOption);
-        }
-
-        newRole.style.fontSize = "20px";
-        newRole.style.textAlign = 'center';
-        newRole.style.width = oldRole.offsetWidth.toString();
-        newRole.id = "role_" + user_campus_id + "_element";
-        oldRole.replaceWith(newRole);
-
-        let oldStatus = document.getElementById("status_" + user_campus_id + "_element");
-        let newStatus = document.createElement("select");
-
-        let activeOption = document.createElement("option");
-        activeOption.text = "Active";
-        let droppedOption = document.createElement("option");
-        droppedOption.text = "Dropped";
-
-        if(oldStatus.innerText === "Active") {
-            newStatus.add(activeOption);
-            newStatus.add(droppedOption);
-        } else {
-            newStatus.add(droppedOption);
-            newStatus.add(activeOption);
-        }
-        newStatus.style.fontSize = "20px";
-        newStatus.style.textAlign = 'center';
-        newStatus.style.width = oldStatus.offsetWidth.toString();
-        newStatus.id = "status_" + user_campus_id + "_element";
-        oldStatus.replaceWith(newStatus);
-
-    }
-
-    function updateEditedUser(button) {
-        let user_campus_id = button.id.split("_")[1]; // Gets UMBC Campus Id of User
-        let newLastName = document.getElementById("lastname_" + user_campus_id + "_element").value;
-        let newFirstName = document.getElementById("firstname_" + user_campus_id + "_element").value;
-        let newNameID = document.getElementById("umbc_name_id_" + user_campus_id + "_element").value;
-        let newDiscussionSection = document.getElementById("section_" + user_campus_id + "_element").value;
-        let newRole = document.getElementById("role_" + user_campus_id + "_element").value;
-        let newStatus = document.getElementById("status_" + user_campus_id + "_element").value;
-        let ajaxQuery = new XMLHttpRequest();
-        ajaxQuery.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                let messageFeedback = document.getElementById('messageFeedback');
-                let prefix = this.responseText;
-                prefix = prefix.substring(0, 5);
-                if(prefix === "ERROR") {
-                    messageFeedback.style.color = "#ff0000";
-                } else {
-                    messageFeedback.style.color = "#3f9b42";
-                    finishEditingUser(user_campus_id);
-                    button.className = "edit_button";
-                    button.innerText = "Edit User";
-                    button.onclick = function () {editUser(button)};
-                }
-                messageFeedback.innerText = this.responseText;
-                messageFeedback.style.display = 'block';
-
-            }
-        }
-        ajaxQuery.open("POST", "edit_user.php", true);
-        ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        ajaxQuery.send("lname=" + newLastName + "&fname=" + newFirstName + "&nameID=" + newNameID
-                    + "&disc=" + newDiscussionSection + "&role=" + newRole + "&status=" + newStatus + "&cID=" + user_campus_id);
-    }
-
-    function finishEditingUser(campus_id) {
-        let inputAttributeList = ["lastname_", "firstname_", "umbc_name_id_", "section_", "role_"];
-        for (let counter = 0; counter < inputAttributeList.length; counter++) {
-            let oldText = document.getElementById(inputAttributeList[counter] + campus_id + "_element");
-            let newText = document.createElement("p");
-            newText.id = oldText.id;
-            newText.innerText = oldText.value;
-            oldText.replaceWith(newText)
-        }
-
-        let oldStatus = document.getElementById("status_" + campus_id + "_element");
-        let newStatus = document.createElement("p");
-        newStatus.id = oldStatus.id;
-        newStatus.innerText = oldStatus.value;
-        oldStatus.replaceWith(newStatus);
-        let statusBackground = document.getElementById("status_" + campus_id);
-        if(newStatus.innerText === "Active") {
-            statusBackground.style.backgroundColor = '#006400';
-        } else {
-            statusBackground.style.backgroundColor = 'red';
-        }
-
-    }
-
-    function updateUsersTable() {
-        resetUsersTable();
-        let searchBar = document.getElementById('searchUsers');
-        let currSearchTerm = searchBar.value.toLowerCase(); // Case insensitive searching :)
-        let usersTable = document.getElementById('user_table');
-        let rowList = usersTable.getElementsByTagName('tr'); // Returns list of rows to iterate through
-        for(let rowCounter = 1; rowCounter < rowList.length; rowCounter++) {
-            let rowHasElement;
-            let elementList = rowList[rowCounter].getElementsByTagName('td'); // Returns list of elements to iterate through
-            for(let elemCounter = 0; elemCounter < elementList.length - 4; elemCounter++) {
-                if(elementList[elemCounter].innerText.toString().toLowerCase().includes(currSearchTerm)) {
-                    rowHasElement = true;
-                }
-            }
-            if(!rowHasElement) {
-                rowList[rowCounter].style.display = 'none';
-            }
-        }
-    }
-    function resetUsersTable() {
-        let usersTable = document.getElementById('user_table');
-        let rowList = usersTable.getElementsByTagName('tr');
-        for(let rowCounter = 1; rowCounter < rowList.length; rowCounter++) {
-            rowList[rowCounter].style.display = '';
-        }
-
-    }
-
-    function emailNewStudents() {
-        document.getElementById("messageFeedback").style.display = 'block';
-        document.getElementById("messageFeedback").innerText = "Emailing newly enrolled students...";
-        document.getElementById("messageFeedback").style.color = "#0073ca";
-
-            let ajaxQuery = new XMLHttpRequest();
-            ajaxQuery.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    document.getElementById("messageFeedback").innerText = this.responseText;
-                    if(this.responseText.substring(0, 5) !== "ERROR") {
-                        document.getElementById("messageFeedback").style.color = "#3f9b42";
-                    } else {
-                        document.getElementById("messageFeedback").style.color = "red";
-                    }
-                }
-            };
-            ajaxQuery.open("POST", "email_new_students.php", true);
-            ajaxQuery.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            ajaxQuery.send();
-    }
-</script>
+</html>
