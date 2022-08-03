@@ -158,7 +158,7 @@ echo "<body onload='loadGradesForUser(\"$currUser\")'>";
         echo "<li><a href='assignments.php'>View Assignments</a></li>
                 <li><a href='' class='current'>View Grades</a></li>";
     } else if(getEnrollment(phpCAS::getUser(), $conn) === "TA") {
-        echo "<li><a href='assignments.php' class='current'>View Assignments</a></li>
+        echo "<li><a href='assignments.php'>View Assignments</a></li>
                 <li><a href='' class='current'>View Grades</a></li>
                 <li><a href='ta/grade_submissions.php' style='color: deepskyblue'>Grade Submissions</a></li>";
     } else if(getEnrollment(phpCAS::getUser(), $conn) === "Instructor") {

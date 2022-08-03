@@ -393,33 +393,38 @@ function getCampusIDFromExtensionString($student_string, $conn) {
 
 function verifyAssignmentForVisibility($assignment_name, $conn) {
     // First, check if assignment is already visible in the first place
+    $assignment_name = $conn->real_escape_string(stripslashes($assignment_name));
+
     $check_assignment_visibility_sql = "SELECT is_visible FROM Assignments WHERE assignment_name = '$assignment_name'";
-    $assignment_visibility = $conn->query($check_assignment_visibility_sql)->fetch_assoc()["is_visible"];
-    if(intval($assignment_visibility) === 1) {
-        return "Visible to students!";
-    }
+    $assignment_visibility_result = $conn->query($check_assignment_visibility_sql);
+    if($assignment_visibility_result === false) {
+        return "ERROR: " . $conn->error;
+    } else {
 
-    // Visibility Verification
-    // 1 - Is there a document link set? - DONE
-    // 2 - Do the base part points add up *exactly* to the assignment total? - DONE
-    // 3 - Is there a sample makefile uploaded for each part? - DONE
-    // 4 - Is there at least one sample input file AND one sample output file uploaded for each part? - DONE
+        $assignment_visibility = $assignment_visibility_result->fetch_assoc()["is_visible"];
+        if(intval($assignment_visibility) === 1) {
+            return "Visible to students!";
+        }
+        // Visibility Verification
+        // 1 - Is there a document link set? - DONE
+        // 2 - Do the base part points add up *exactly* to the assignment total? - DONE
+        // 3 - Is there a sample makefile uploaded for each part? - DONE
+        // 4 - Is there at least one sample input file AND one sample output file uploaded for each part? - DONE
 
-    $doc_link_sql = "SELECT point_value, document_link FROM Assignments WHERE assignment_name = '$assignment_name'";
-    $row = $conn->query($doc_link_sql)->fetch_assoc();
-    $doc_link_result = $row["document_link"];
-    if($doc_link_result === null) {
-        return "ERROR: You must fill in a document link in the details panel!";
-    }
-    $assignment_point_value = $row["point_value"];
+        $doc_link_sql = "SELECT point_value, document_link FROM Assignments WHERE assignment_name = '$assignment_name'";
+        $row = $conn->query($doc_link_sql)->fetch_assoc();
+        $doc_link_result = $row["document_link"];
+        if($doc_link_result === null) {
+            return "ERROR: You must fill in a document link in the details panel!";
+        }
+        $assignment_point_value = $row["point_value"];
 
-    $assignment_parts_sql = "SELECT part_name, point_value, extra_credit FROM SubmissionParts WHERE assignment_name = '$assignment_name'";
-    $assignment_parts_result = $conn->query($assignment_parts_sql);
-    $part_base_points_total = 0;
-    while($row = $assignment_parts_result->fetch_assoc()) {
-        $curr_part_name = $row["part_name"];
-        $curr_point_value = $row["point_value"];
-        $curr_ec_value = $row["extra_credit"];
+        $assignment_parts_sql = "SELECT part_name, point_value FROM SubmissionParts WHERE assignment_name = '$assignment_name'";
+        $assignment_parts_result = $conn->query($assignment_parts_sql);
+        $part_base_points_total = 0;
+        while($row = $assignment_parts_result->fetch_assoc()) {
+            $curr_part_name = $conn->real_escape_string($row["part_name"]);
+            $curr_point_value = $row["point_value"];
 
 //        $curr_rubric_total = 0;
 //        $rubric_part_points_sql = "SELECT line_value FROM RubricParts WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name'";
@@ -432,28 +437,29 @@ function verifyAssignmentForVisibility($assignment_name, $conn) {
 //            return "ERROR: The rubric point total for " . $curr_part_name . " must be equal to the sum of the base points and extra credit points for that part!";
 //        }
 
-        $check_makefile_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_MAKEFILE'";
-        $check_makefile_result = $conn->query($check_makefile_sql);
-        if($check_makefile_result->num_rows === 0) {
-            return "ERROR: You must provide a sample makefile for " . $curr_part_name . "!";
-        }
+            $check_makefile_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_MAKEFILE'";
+            $check_makefile_result = $conn->query($check_makefile_sql);
+            if($check_makefile_result->num_rows === 0) {
+                return "ERROR: You must provide a sample makefile for " . $curr_part_name . "!";
+            }
 
-        $check_input_file_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_INPUT'";
-        $check_input_file_result = $conn->query($check_input_file_sql);
-        if($check_input_file_result->num_rows === 0) {
-            return "ERROR: You must provide at least one sample input file for '" . $curr_part_name . "'!";
-        }
+            $check_input_file_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_INPUT'";
+            $check_input_file_result = $conn->query($check_input_file_sql);
+            if($check_input_file_result->num_rows === 0) {
+                return "ERROR: You must provide at least one sample input file for '" . $curr_part_name . "'!";
+            }
 
-        $check_output_file_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_OUTPUT'";
-        $check_output_file_result = $conn->query($check_output_file_sql);
-        if($check_output_file_result->num_rows === 0) {
-            return "ERROR: You must provide at least one sample output file for '" . $curr_part_name . "'!";
-        }
+            $check_output_file_sql = "SELECT id_number FROM AuxiliaryFiles WHERE assignment_name = '$assignment_name' AND part_name = '$curr_part_name' AND file_type = 'SAMPLE_OUTPUT'";
+            $check_output_file_result = $conn->query($check_output_file_sql);
+            if($check_output_file_result->num_rows === 0) {
+                return "ERROR: You must provide at least one sample output file for '" . $curr_part_name . "'!";
+            }
 
-        $part_base_points_total += $curr_point_value;
-    }
-    if(intval($part_base_points_total) !== intval($assignment_point_value)) {
-        return "ERROR: The sum of the base points for all the assignment parts must equal the total assignment point value!";
+            $part_base_points_total += $curr_point_value;
+        }
+        if(intval($part_base_points_total) !== intval($assignment_point_value)) {
+            return "ERROR: The sum of the base points for all the assignment parts must equal the total assignment point value!";
+        }
     }
 
     // If it gets here, then all the verification is finished and passed!

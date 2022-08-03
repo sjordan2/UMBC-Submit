@@ -12,7 +12,7 @@ if($conn->connect_error) {
 } else {
     $action = $_POST["action"]; // Required action variable
     if($action === "refresh_table") {
-        $assignment_table_sql = "SELECT assignment_name, point_value, date_due, class_type, is_visible FROM Assignments";
+        $assignment_table_sql = "SELECT assignment_name, point_value, date_due, class_type, is_visible, document_link FROM Assignments";
         $assignment_table_result = $conn->query($assignment_table_sql);
         $data_array = [];
         $data_array["table"] = constructAssignmentTableData($conn, $assignment_table_result);
@@ -308,7 +308,7 @@ if($conn->connect_error) {
         $return_json["pointTotal"] = intval($base_points) + intval($extra_credit_points);
         $return_json["extraCredit"] = intval($extra_credit_points);
 
-        $load_rubric_sql = "SELECT line_type, line_item, line_value FROM RubricParts WHERE assignment_name = '$assignment_name' AND part_name = '$part_name'";
+        $load_rubric_sql = "SELECT line_type, line_item, line_value FROM RubricParts WHERE assignment_name = '$assignment_name' AND part_name = '$part_name' ORDER BY id_number";
         $load_rubric_result = $conn->query($load_rubric_sql);
 
         $return_json["table"] = constructGradingRubricTableData($load_rubric_result);
@@ -328,7 +328,9 @@ if($conn->connect_error) {
         $curr_rubric_total = 0;
         $new_rubric_json = json_decode($_POST["newRubric"], true);
         foreach($new_rubric_json as $line) {
-            $curr_rubric_total += $line["value"];
+            if($line["type"] === "0") {
+                $curr_rubric_total += $line["value"];
+            }
         }
         if($curr_rubric_total > ($part_points + $extra_credit_points)) {
             echo "ERROR: Rubric points cannot exceed the sum of the base and extra credit points for this part!";

@@ -1,5 +1,4 @@
 <?php
-require_once 'db_sql.php';
 require_once 'sql_functions.php';
 
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
@@ -54,7 +53,7 @@ $role = getEnrollment($user_campus_id, $conn);
             <?php if($role !== false): ?>
             <ul class="navbar-nav me-auto">
                 <?php if($role === "Student"): ?>
-                    <li class="nav-item"><a class="nav-link text-student" href="#">View Assignments</a></li>
+                    <li class="nav-item"><a class="nav-link text-student" href="/assignments.php">View Assignments</a></li>
                     <li class="nav-item"><a class="nav-link text-student" href="#">View Grades</a></li>
                 <?php else: ?>
                 <li class="nav-item header-nav dropdown">
@@ -62,7 +61,7 @@ $role = getEnrollment($user_campus_id, $conn);
                         Student Links
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                        <li><a class="dropdown-item text-student" href="#">View Assignments</a></li>
+                        <li><a class="dropdown-item text-student" href="/assignments.php">View Assignments</a></li>
                         <li><a class="dropdown-item text-student" href="#">View Grades</a></li>
                     </ul>
                 </li>

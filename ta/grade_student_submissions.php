@@ -332,7 +332,7 @@ if(getEnrollment(phpCAS::getUser(), $conn) === "Student") {
                 rubricData.push({points_received: pointsReceived, point_value: pointValue, line_item: textElement});
             }
         }
-
+        
         let rubricComments = document.getElementById("graderCommentBox").value;
 
         let ajaxQuery = new XMLHttpRequest();

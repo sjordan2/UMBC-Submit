@@ -66,23 +66,25 @@ $code_results = $conn->query($get_student_code_sql);
 // Dumps each submission file for that part into the docker file system
 while($row = $code_results->fetch_assoc()) {
     $file_name = $row['submission_name'];
-    $file_contents = $row['submission_contents'];
+    $file_contents = $row['submission_contents'] . "\n";
     $ssh_tunnel->write("cat > $file_name\n");
     $ssh_tunnel->read();
-    $ssh_tunnel->write($file_contents . "\x04");
+    $ssh_tunnel->write($file_contents);
     $ssh_tunnel->read();
+    $ssh_tunnel->write("\x03");
 }
 
 // Selects the makefile for this part
 $get_makefile_sql = "SELECT file_contents FROM Testing WHERE assignment = '$assignmentName_sql' AND part = '$partName_sql' AND file_type = 'SAMPLE_MAKEFILE'";
 $makefile_result = $conn->query($get_makefile_sql);
-$file_contents = $makefile_result->fetch_assoc()['file_contents'];
+$file_contents = $makefile_result->fetch_assoc()['file_contents'] . "\n";
 
 // Dumps the makefile for that part into the docker file system
 $ssh_tunnel->write("cat > Makefile\n");
 $ssh_tunnel->read();
-$ssh_tunnel->write($file_contents . "\x04");
+$ssh_tunnel->write($file_contents);
 $ssh_tunnel->read();
+$ssh_tunnel->write("\x03");
 
 // Selects all the sample input files for this part
 $get_io_files_sql = "SELECT file_name, file_contents FROM Testing WHERE assignment = '$assignmentName_sql' AND part = '$partName_sql' AND file_type = 'SAMPLE_IO'";
@@ -90,19 +92,23 @@ $io_results = $conn->query($get_io_files_sql);
 // Dumps each input file for that part into the docker file system
 while($row = $io_results->fetch_assoc()) {
     $file_name = $row['file_name'];
-    $file_contents = $row['file_contents'];
+    $file_contents = $row['file_contents'] . "\n";
     $ssh_tunnel->write("cat > $file_name\n");
     $ssh_tunnel->read();
-    $ssh_tunnel->write($file_contents . "\x04");
+    $ssh_tunnel->write($file_contents);
     $ssh_tunnel->read();
+    $ssh_tunnel->write("\x03");
 }
+
+//$ssh_tunnel->write("echo 'Freeman Hrabowski' | python3 submit_test.py\n");
+//$test_output = $ssh_tunnel->read();
 
 // Runs the makefile (runs all of the tests at once), and then grabs the test output
 $ssh_tunnel->write("make\n");
 $test_output = $ssh_tunnel->read();
 
 echo "<div id='student_output_div' style='overflow-x: scroll;background-color: black;color: white;width: 100%;max-height: 250px;overflow-y: scroll;'>";
-echo "<pre style='width: 5px'>" . substr(substr($test_output, 14), 0, -18) . "</pre>";
+echo "<pre style='width: 5px'>" . substr(substr($test_output, 36), 0, -18) . "</pre>";
 echo "</div>";
 
 

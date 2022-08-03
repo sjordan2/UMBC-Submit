@@ -23,6 +23,50 @@ function getEnrollment($campusID, $conn) {
     }
 }
 
+function outputInstructors($conn): String {
+    $get_instructors_sql = "SELECT firstname, lastname, umbc_name_id FROM Users WHERE role = 'Instructor'";
+    $get_instructors_result = $conn->query($get_instructors_sql);
+    $response_text = "";
+    while($row = $get_instructors_result->fetch_assoc()) {
+        $response_text .= "<b>" . $row["firstname"] . " " . $row["lastname"] . " &lt;" . $row["umbc_name_id"] . "@umbc.edu&gt; </b><br>";
+    }
+    $response_text .= "<hr>";
+    return htmlspecialchars($response_text);
+}
+
+function getCurrentSubmissionNumber($user_id, $assignment, $part, $conn): int {
+    // The below query gets all the student's submissions for this part
+    $submission_check_sql = "SELECT submission_number FROM Submissions WHERE student_id = '$user_id' AND assignment_name = '$assignment' AND part_name = '$part'";
+    $submission_check_result = $conn->query($submission_check_sql);
+    if($submission_check_result->num_rows === 0) {
+        return 1;
+    } else {
+        // The below query selects the one submission that has the highest submission number and returns that number
+        $number_parts_submission = "SELECT MAX(submission_number) AS SubmissionMax FROM Submissions WHERE student_id = '$user_id' AND assignment_name = '$assignment' AND part_name = '$part' LIMIT 1";
+        return $conn->query($number_parts_submission)->fetch_assoc()['SubmissionMax'] + 1;
+    }
+}
+
+function getPartSubmissionStatus($user_id, $assignment, $part, $conn) {
+    $part_submission_sql = "SELECT date_submitted FROM Submissions WHERE student_id = '$user_id' AND assignment_name = '$assignment' AND part_name = '$part' ORDER BY date_submitted DESC";
+    $part_check_result = $conn->query($part_submission_sql);
+    if($part_check_result->num_rows === 0) {
+        return null;
+    } else {
+        $returned_date_object = null;
+        try {
+            $returned_date_object = new DateTime($part_check_result->fetch_assoc()["date_submitted"]);
+        } catch(Exception $e) {
+            echo "Date Time Error when getting part submission status: " . $e;
+            exit();
+        }
+        return $returned_date_object->format("l, F jS, Y, g:i:s A");
+    }
+}
+
+////////
+////////
+
 function ensureUsersTableCreation($conn) {
     $sql = "SHOW TABLES LIKE 'Users';";
     $result = $conn->query($sql);
@@ -128,24 +172,24 @@ function ensureSubmissionsTableCreation($conn) {
                             REFERENCES Users (umbc_id)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE,
-                        assignment VARCHAR(50) NOT NULL,
+                        assignment_name VARCHAR(50) NOT NULL,
                         CONSTRAINT assignment_for_submission
-                        FOREIGN KEY (assignment) 
+                        FOREIGN KEY (assignment_name) 
                             REFERENCES Assignments (assignment_name)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE,
-                        assignment_part VARCHAR(30) NOT NULL,
+                        part_name VARCHAR(30) NOT NULL,
                         CONSTRAINT assignment_part_of_submission
-                        FOREIGN KEY (assignment_part)
+                        FOREIGN KEY (part_name)
                             REFERENCES SubmissionParts (part_name)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE,
                         submission_number INT NOT NULL,
                         date_submitted DATETIME NOT NULL,
-                        submission_name VARCHAR(30) NOT NULL,
-                        CONSTRAINT assignment_name_to_submit
-                        FOREIGN KEY (submission_name) 
-                            REFERENCES SubmissionParts (submission_file_name)
+                        submission_file_name VARCHAR(30) NOT NULL,
+                        CONSTRAINT file_name_to_submit
+                        FOREIGN KEY (submission_file_name) 
+                            REFERENCES SubmissionFiles (submission_file_name)
                             ON DELETE CASCADE
                             ON UPDATE CASCADE,
                         submission_contents LONGTEXT NOT NULL
@@ -296,32 +340,6 @@ function getAssignmentSubmissionStatus($campus_id, $assignment, $conn): int {
         return 1;
     } else {
         return 2;
-    }
-}
-
-function getCurrentSubmissionNumber($user_id, $assignment, $part, $conn): int {
-    $assignment_name_sql = $conn->real_escape_string($assignment);
-    $part_name_sql = $conn->real_escape_string($part);
-    $submission_check_sql = "SELECT submission_number FROM Submissions WHERE student_id = '$user_id' AND assignment = '$assignment_name_sql' AND assignment_part = '$part_name_sql'";
-    $submission_check_result = $conn->query($submission_check_sql);
-    if($submission_check_result->num_rows === 0) {
-        return 1;
-    } else {
-        // The following should just return one row. Otherwise, we got a problem.
-        $number_parts_submission = "SELECT MAX(submission_number) AS SubmissionMax FROM Submissions WHERE student_id = '$user_id' AND assignment = '$assignment_name_sql' AND assignment_part = '$part_name_sql' LIMIT 1";
-        return $conn->query($number_parts_submission)->fetch_assoc()['SubmissionMax'] + 1;
-    }
-}
-
-function getPartSubmissionStatus($user_id, $assignment, $part, $conn): bool {
-    $assignment_name_sql = $conn->real_escape_string($assignment);
-    $part_name_sql = $conn->real_escape_string($part);
-    $part_submission_sql = "SELECT id_number FROM Submissions WHERE student_id = '$user_id' AND assignment = '$assignment_name_sql' AND assignment_part = '$part_name_sql'";
-    $part_check_result = $conn->query($part_submission_sql);
-    if($part_check_result->num_rows === 0) {
-        return false;
-    } else {
-        return true;
     }
 }
 

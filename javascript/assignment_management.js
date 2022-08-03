@@ -21,6 +21,7 @@ function refreshAssignmentsTable(type, updatedAssignment, pointValue, dueDate, c
                 });
             },
             error: function (xhr, status, error) {
+                console.log(xhr, status, error);
                 // There was a SQL connection error
                 alertify.set('notifier','position', 'top-center');
                 alertify.set('notifier','delay', 0);
@@ -83,6 +84,7 @@ function refreshAssignmentsTable(type, updatedAssignment, pointValue, dueDate, c
                 }
             },
             error: function (xhr, status, error) {
+                console.log(xhr, status, error);
                 // There was a SQL connection error
                 alertify.set('notifier','position', 'top-center');
                 alertify.set('notifier','delay', 0);
@@ -158,6 +160,7 @@ function refreshSubmissionPartsTable(type, assignment_name, part_name, point_val
                     alertify.set('notifier','delay', 0);
                     alertify.error(data.message);
                 } else {
+                    clearSubmissionPartInputsAndValidation();
                     alertify.set('notifier', 'position', 'top-center');
                     alertify.set('notifier', 'delay', 5);
                     alertify.success(data.message);
@@ -1758,8 +1761,10 @@ document.getElementById("createNewSubmissionPartButton").addEventListener("click
 document.getElementById("selectStudentForExtensionBox").addEventListener("hidden.bs.modal", function(event) {
    document.getElementById("searchUsersForExtensions").value = "";
    let studentInputEl = document.getElementById("grantNewExtension_student");
-   studentInputEl.classList.remove("is-invalid");
-   studentInputEl.classList.add("is-valid");
+   if(studentInputEl.value !== "") {
+       studentInputEl.classList.remove("is-invalid");
+       studentInputEl.classList.add("is-valid");
+   }
    document.getElementById("inputGroupValidationNoWork").classList.replace("d-block", "d-none");
 });
 
@@ -1794,7 +1799,6 @@ document.getElementById("addNewSubmissionPart_Button").addEventListener("click",
     }
     if(goodToGo) {
         refreshSubmissionPartsTable("add", document.getElementById("submissionPartIDTitle").innerText, part_name_elem.value, point_value_elem.value, extra_credit_elem.value);
-        clearSubmissionPartInputsAndValidation();
     }
 });
 

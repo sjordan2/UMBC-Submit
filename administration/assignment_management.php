@@ -3,6 +3,10 @@ require_once 'assignment_functions.php';
 require_once '../includes/db_sql.php';
 require_once '../includes/sql_functions.php';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $conn = new mysqli($sql_host, $sql_username, $sql_password, $sql_dbname);
 
 $user_campus_id = $_SERVER["umbccampusid"];
